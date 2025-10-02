@@ -13,7 +13,12 @@ alwaysApply: true
 - Use the data from the API of the following URL for the data of this application (values of graphs, dates of records, images of meals, etc.).
   - API endpoint: https://health_app_api.dev-arent.workers.dev
   - The schema of the API is described in OpenAPI format at the following URL. Please check here: https://health_app_api.dev-arent.workers.dev/openapi 
+- Use [React Query](https://tanstack.com/query/latest/docs/framework/react/installation) for data fetching
 - Use TypeScript as the application development language.
+- Use [styled-components](https://styled-components.com/) for styling
+- Implement Linter and Formatter packages to enforce consistency in coding style.
+  - Linter: ESLint
+  - Formatter: Prettier
 - Write test code so that coverage can be measured.
   - Testing framework: Vitest
   - Expect coverage percentage is 80% and above
