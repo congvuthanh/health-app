@@ -6,7 +6,7 @@ alwaysApply: false
 
 **Functional-Requirements**
 - Routing path must be「/myPage」
-- If the user is not authenticated or authentication has failed, the screen will be displayed as "Authentication failure display” (You can also create an error page and transition to it)
+- If the user is not authenticated or authentication has failed, the screen will be displayed as "Authentication failure display” (defined in ./authenticate-failed-page-specs.mdc)
 
 **Header**
 - The number of unread notifications should be displayed as a badge in the 「お知らせ(notification)」 section of the menu.
@@ -24,22 +24,22 @@ alwaysApply: false
 - Other menu items should be implemented as links and href="#" should be set
 
 **「本日の達成率(achievement)」 in the upper left corner**
-- Fetch 「本日の達成率(achievement)」 data from API and display the following
-- Date of data registration
-- Image of the meal
-- Achievement rate
-- Circular indicator according to the achievement rate
+- Fetch 「本日の達成率(achievement)」 data from API and display the following:
+  - Date of data registration
+  - Image of the meal
+  - Achievement rate
+  - Circular indicator according to the achievement rate
 
 **「体重・体脂肪率の記録(health-record)」in the upper right corner**
-- Retrieve「体重・体脂率(health-record)」 data from the API and display the line graph with the most recent date at the far right.
+- Retrieve「体重・体脂肪率(health-record)」 data from the API and display the line graph with the most recent date at the far right.
 - Clicking the "Day," "Week," "Month," or "Year" button will change the display range and display a graph that corresponds to that range.
   - Each data can be retrieved by setting the time period as a request parameter to the API.
 - The initial value of the filter should be "Year".
 - The data retrieved by each filter should be kept in the cache of the front-end and displayed from the cache for the second and subsequent requests.
 
- **「食事の記録(meal-record)」 at the bottom of the page**
+**「食事の記録(meal-record)」 at the bottom of the page**
 - Retrieve 「食事の記録(meal-record)」 data from the API and display them in order of newest to oldest from the top left (default is 8 items)
-- Paging occurs by scrolling the screen until the bottom of the 「食事の記録(meal-record)」list fits within the screen, and content is added (so-called infinite-scrolling)
+- When the user scrolls near the bottom of the 「食事の記録(meal-record)」list, additional content is automatically loaded (infinite scrolling)
 - All「食事の記録(meal-record)」data should be retrieved, and paging requests should not be invoked when there is no more data to be retrieved additionally.
 
 **「スクロール(scroll)」Button in the bottom right**
@@ -50,9 +50,8 @@ alwaysApply: false
 **Design-Requirements**
 - The header, 「食事の記録(meal-record)」, and footer should have a common maximum width, and if the device width is large, there should be margins on the left and right sides.
 - 「栄養達成率(achievement)」and「体重・体脂肪グラフ(health-record)」 should be displayed at the same height and fill the entire width of the screen.
-- For「栄養達成率(achievement)」, refer to Figma and add appropriate effects to the images and UI.
 - The color of the line in the 「体重・体脂肪グラフ(health-record)」 should be yellow for weight and blue for body fat percentage.
-- Clickable elements should be visually obvious when hovering (design is not required).
+- Clickable elements should be visually obvious when hovering.
 - Consider the accessibility of each element.
 
 
@@ -63,4 +62,4 @@ alwaysApply: false
 
 
 **Supplements about API**
-- In the case of discrepancies between the values and order of the API data and the representation on the comp, the API data will take priority
+- In case of discrepancies between the API data and the design mockup/specifications, the API data takes priority.
