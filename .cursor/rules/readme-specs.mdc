@@ -1,0 +1,6 @@
+---
+globs: README.md
+alwaysApply: false
+---
+
+- This file should provide a brief description of the application, runtime and technology stack, architecture, and set-up procedures, assuming actual product development.

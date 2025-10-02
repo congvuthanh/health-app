@@ -1,0 +1,11 @@
+---
+alwaysApply: false
+---
+
+*Not Found page*
+
+**Functional-Requirements**
+- A page that is displayed when a user tries to access a URL other than "Top Page(/)" or "My Page(/myPage)".
+
+**Design-Requirements**
+- Any design is acceptable as long as the content can be judged.

@@ -1,0 +1,28 @@
+---
+alwaysApply: true
+---
+
+*The web application "Health-App"*
+
+**Description**
+- The following 3 pages are to be implemented in this application.
+  - Top page (login page) ・・・ URL path: /
+  - My Page ・・・ URL path: /myPage
+  - Not Found ・・・ URL path:  other than the above
+- Use the data from the API of the following URL for the data of this application (values of graphs, dates of records, images of meals, etc.).
+  - API endpoint (this page itself is empty): https://health_app_api.dev-arent.workers.dev
+  - The schema of the API is described in OpenAPI format at the following URL. Please check here: https://health_app_api.dev-arent.workers.dev/openapi 
+- Use TypeScript as the application development language.
+- Write test code so that coverage can be measured.
+
+**Important**
+- This App has an authentication (login) function. Please refer to the Functional-Requirements and OpenAPI schema for the specifications of the authentication function.
+- This App is available in both PC and SP sizes. Ensure that your implementation is responsive. However, the layout of the responsive design is up to you. As long as you follow the points below, the responsive design itself will not affect your results.
+  - Breakpoints should be approximately between 415px and 1024px (you may create multiple breakpoints).
+  - Elements do not fall out of columns.
+  - The width of the screen does not overflow (no horizontal scrolling or element clipping occurs).
+  - Even on an SP-size screen, visibility of text and operability of the UI can be ensured as in a general web application.
+- Use the following image data format: svg.
+- The following fonts are used. All of them can be downloaded from Google Fonts.
+  - Japanese → Noto Sans JP Regular(400) and Bold(700)
+  - Alphanumeric → Inter Regular(400) and Bold(700)
