@@ -29,6 +29,56 @@ declare module 'styled-components' {
       japanese: string;
       alphanumeric: string;
     };
+    typography: {
+      h1: {
+        regular: string;
+        bold: string;
+      };
+      h2: {
+        regular: string;
+        bold: string;
+      };
+      h3: {
+        regular: string;
+        bold: string;
+      };
+      h4: {
+        regular: string;
+        bold: string;
+      };
+      h5: {
+        regular: string;
+        bold: string;
+      };
+      p1: {
+        regular: string;
+        bold: string;
+      };
+      p2: {
+        regular: string;
+        bold: string;
+      };
+      p3: {
+        regular: string;
+        bold: string;
+      };
+      p4: {
+        regular: string;
+        bold: string;
+      };
+      p5: {
+        regular: string;
+        bold: string;
+      };
+      p6: {
+        regular: string;
+        bold: string;
+      };
+      p7: {
+        regular: string;
+        bold: string;
+      };
+    };
     breakpoints: {
       mobile: string;
       tablet: string;
