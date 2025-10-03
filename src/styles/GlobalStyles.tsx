@@ -32,7 +32,8 @@ const GlobalStyles = createGlobalStyle`
     flex-direction: column;
     place-items: center;
     min-width: 32rem;
-    min-height: 100vh;
+    min-height: 100vh; /* Fallback for older browsers */
+    min-height: 100dvh; /* Modern browsers */
     font-size: 1.6rem;
   }
 `;
