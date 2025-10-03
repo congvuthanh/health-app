@@ -2,17 +2,19 @@
 alwaysApply: true
 ---
 
-*The web application "Health-App"*
+_The web application "Health-App"_
 
 **Description**
+
 - The following pages are to be implemented in this application:
-  - Top page (login page) ・・・ URL path: /
-  - My Page ・・・ URL path: /myPage
-  - Authentication Failure Display ・・・ See authenticate-failed-page-specs.mdc
-  - Not Found ・・・ URL path: other than the above
+  - Top page (login page) ・・・ URL path: /. See top-page-specs.mdc
+  - My Page ・・・ URL path: /myPage. See my-page-specs.mdc
+  - Authentication Failure Display ・・・ /authenticationError. See authenticate-failed-page-specs.mdc
+  - Not Found ・・・ URL path: other than the above. See not-found-page-specs.mdc
 - Use the data from the API of the following URL for the data of this application (values of graphs, dates of records, images of meals, etc.).
   - API endpoint: https://health_app_api.dev-arent.workers.dev
-  - The schema of the API is described in OpenAPI format at the following URL. Please check here: https://health_app_api.dev-arent.workers.dev/openapi 
+  - The schema of the API is described in OpenAPI format at the following URL. Please check here: https://health_app_api.dev-arent.workers.dev/openapi
+- Use [React Router v7 - latest](https://reactrouter.com/start/data/installation) for routing.
 - Use [React Query](https://tanstack.com/query/latest/docs/framework/react/installation) for data fetching
 - Use TypeScript as the application development language.
 - Use [styled-components](https://styled-components.com/) for styling
@@ -26,6 +28,8 @@ alwaysApply: true
   - Should have integration tests for pages.
 
 **Important**
+
+- Make sure to follow README.md during development
 - This App has an authentication (login) function. Please refer to the Functional-Requirements(has defined on Cursor rules) and OpenAPI schema for the specifications of the authentication function.
 - This App is available in both PC and Mobile sizes. Ensure that your implementation is responsive. However, the layout of the responsive design is up to you. As long as you follow the points below, the responsive design itself will not affect your results.
   - Breakpoints:
@@ -35,7 +39,7 @@ alwaysApply: true
   - Elements do not fall out of columns.
   - The width of the screen does not overflow (no horizontal scrolling or element clipping occurs).
   - Even on a Mobile-size screen, visibility of text and operability of the UI can be ensured as in a general web application.
-- Use the following image data format: 
+- Use the following image data format:
   - svg for assets stored in project directory /assets
   - url if we map it from API responses
 - The following fonts are used. All of them can be downloaded from Google Fonts.
