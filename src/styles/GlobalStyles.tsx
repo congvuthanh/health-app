@@ -1,6 +1,10 @@
 import { createGlobalStyle } from 'styled-components';
 
 const GlobalStyles = createGlobalStyle`
+  html {
+    font-size: 62.5%;
+  }
+
   :root {
     font-family: 'Noto Sans JP', 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
     line-height: 1.5;
@@ -27,8 +31,9 @@ const GlobalStyles = createGlobalStyle`
     display: flex;
     flex-direction: column;
     place-items: center;
-    min-width: 320px;
+    min-width: 32rem;
     min-height: 100vh;
+    font-size: 1.6rem;
   }
 `;
 

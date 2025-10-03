@@ -34,145 +34,145 @@ export const theme: DefaultTheme = {
   typography: {
     h1: {
       regular: `
-        font-size: 56px;
-        line-height: 64px;
+        font-size: 5.6rem;
+        line-height: 6.4rem;
         font-weight: 400;
       `,
       bold: `
-        font-size: 56px;
-        line-height: 64px;
+        font-size: 5.6rem;
+        line-height: 6.4rem;
         font-weight: 700;
       `,
     },
     h2: {
       regular: `
-        font-size: 48px;
-        line-height: 56px;
+        font-size: 4.8rem;
+        line-height: 5.6rem;
         font-weight: 400;
       `,
       bold: `
-        font-size: 48px;
-        line-height: 56px;
+        font-size: 4.8rem;
+        line-height: 5.6rem;
         font-weight: 700;
       `,
     },
     h3: {
       regular: `
-        font-size: 40px;
-        line-height: 48px;
+        font-size: 4rem;
+        line-height: 4.8rem;
         font-weight: 400;
       `,
       bold: `
-        font-size: 40px;
-        line-height: 48px;
+        font-size: 4rem;
+        line-height: 4.8rem;
         font-weight: 700;
       `,
     },
     h4: {
       regular: `
-        font-size: 32px;
-        line-height: 40px;
+        font-size: 3.2rem;
+        line-height: 4rem;
         font-weight: 400;
       `,
       bold: `
-        font-size: 32px;
-        line-height: 40px;
+        font-size: 3.2rem;
+        line-height: 4rem;
         font-weight: 700;
       `,
     },
     h5: {
       regular: `
-        font-size: 24px;
-        line-height: 32px;
+        font-size: 2.4rem;
+        line-height: 3.2rem;
         font-weight: 400;
       `,
       bold: `
-        font-size: 24px;
-        line-height: 32px;
+        font-size: 2.4rem;
+        line-height: 3.2rem;
         font-weight: 700;
       `,
     },
     p1: {
       regular: `
-        font-size: 20px;
-        line-height: 24px;
+        font-size: 2rem;
+        line-height: 2.4rem;
         font-weight: 400;
       `,
       bold: `
-        font-size: 20px;
-        line-height: 24px;
+        font-size: 2rem;
+        line-height: 2.4rem;
         font-weight: 700;
       `,
     },
     p2: {
       regular: `
-        font-size: 18px;
-        line-height: 26px;
+        font-size: 1.8rem;
+        line-height: 2.6rem;
         font-weight: 400;
       `,
       bold: `
-        font-size: 18px;
-        line-height: 26px;
+        font-size: 1.8rem;
+        line-height: 2.6rem;
         font-weight: 700;
       `,
     },
     p3: {
       regular: `
-        font-size: 16px;
-        line-height: 24px;
+        font-size: 1.6rem;
+        line-height: 2.4rem;
         font-weight: 400;
       `,
       bold: `
-        font-size: 16px;
-        line-height: 24px;
+        font-size: 1.6rem;
+        line-height: 2.4rem;
         font-weight: 700;
       `,
     },
     p4: {
       regular: `
-        font-size: 14px;
-        line-height: 20px;
+        font-size: 1.4rem;
+        line-height: 2rem;
         font-weight: 400;
       `,
       bold: `
-        font-size: 14px;
-        line-height: 20px;
+        font-size: 1.4rem;
+        line-height: 2rem;
         font-weight: 700;
       `,
     },
     p5: {
       regular: `
-        font-size: 12px;
-        line-height: 18px;
+        font-size: 1.2rem;
+        line-height: 1.8rem;
         font-weight: 400;
       `,
       bold: `
-        font-size: 12px;
-        line-height: 18px;
+        font-size: 1.2rem;
+        line-height: 1.8rem;
         font-weight: 700;
       `,
     },
     p6: {
       regular: `
-        font-size: 10px;
-        line-height: 14px;
+        font-size: 1rem;
+        line-height: 1.4rem;
         font-weight: 400;
       `,
       bold: `
-        font-size: 10px;
-        line-height: 14px;
+        font-size: 1rem;
+        line-height: 1.4rem;
         font-weight: 700;
       `,
     },
     p7: {
       regular: `
-        font-size: 8px;
-        line-height: 12px;
+        font-size: 0.8rem;
+        line-height: 1.2rem;
         font-weight: 400;
       `,
       bold: `
-        font-size: 8px;
-        line-height: 12px;
+        font-size: 0.8rem;
+        line-height: 1.2rem;
         font-weight: 700;
       `,
     },
