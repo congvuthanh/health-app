@@ -68,10 +68,11 @@ health-app/
 ## 🏃‍♂️ Getting Started
 
 1. **Prerequisites**
-   - Node.js (v18 or higher)
+   - Node.js (v20 or higher)
    - pnpm (v8 or higher)
 
 2. **Installation**
+
    ```bash
    # Clone the repository
    git clone [repository-url]
@@ -82,6 +83,7 @@ health-app/
    ```
 
 3. **Development**
+
    ```bash
    # Start development server
    pnpm dev
@@ -116,10 +118,57 @@ health-app/
 ## 🎨 Design System
 
 ### Typography
+
+#### Fonts
+
 - Japanese: Noto Sans JP (Regular 400, Bold 700)
 - Latin/Numbers: Inter (Regular 400, Bold 700)
 
+#### Base Font Size
+
+- Root font size is set to 62.5% (10px base)
+- All typography uses rem units (1rem = 10px)
+
+#### Type Scale
+
+All sizes are in rem units for better accessibility and responsive design.
+
+##### Headings
+
+- **H1**: 5.6rem/6.4rem (56px/64px)
+- **H2**: 4.8rem/5.6rem (48px/56px)
+- **H3**: 4.0rem/4.8rem (40px/48px)
+- **H4**: 3.2rem/4.0rem (32px/40px)
+- **H5**: 2.4rem/3.2rem (24px/32px)
+
+##### Paragraphs
+
+- **P1**: 2.0rem/2.4rem (20px/24px)
+- **P2**: 1.8rem/2.6rem (18px/26px)
+- **P3**: 1.6rem/2.4rem (16px/24px)
+- **P4**: 1.4rem/2.0rem (14px/20px)
+- **P5**: 1.2rem/1.8rem (12px/18px)
+- **P6**: 1.0rem/1.4rem (10px/14px)
+- **P7**: 0.8rem/1.2rem (8px/12px)
+
+#### Usage Example
+
+```typescript
+import styled from 'styled-components';
+
+const Title = styled.h1`
+  ${({ theme }) => theme.typography.h1.bold}
+  font-family: ${({ theme }) => theme.fonts.alphanumeric};
+`;
+
+const JapaneseText = styled.p`
+  ${({ theme }) => theme.typography.p2.regular}
+  font-family: ${({ theme }) => theme.fonts.japanese};
+`;
+```
+
 ### Assets
+
 - SVG format for project assets
 - URL-based images from API responses
 
