@@ -4,10 +4,26 @@ import 'styled-components';
 declare module 'styled-components' {
   export interface DefaultTheme {
     colors: {
-      primary: string;
-      secondary: string;
-      background: string;
-      text: string;
+      white: string;
+      primary: {
+        300: string;
+        400: string;
+        500: string;
+      };
+      secondary: {
+        300: string;
+      };
+      black: {
+        600: string;
+        500: string;
+        400: string;
+        300: string;
+        200: string;
+        100: string;
+      };
+      gradient: {
+        primary: string;
+      };
     };
     fonts: {
       japanese: string;

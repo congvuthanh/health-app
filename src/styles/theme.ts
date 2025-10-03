@@ -2,10 +2,30 @@ import type { DefaultTheme } from 'styled-components';
 
 export const theme: DefaultTheme = {
   colors: {
-    primary: '#646cff',
-    secondary: '#535bf2',
-    background: '#242424',
-    text: 'rgba(255, 255, 255, 0.87)',
+    white: '#FFFFFF',
+
+    primary: {
+      300: '#FFCC21',
+      400: '#FF963C',
+      500: '#EA6C00',
+    },
+
+    secondary: {
+      300: '#8FE9D0',
+    },
+
+    black: {
+      600: '#2E2E2E',
+      500: '#414141',
+      400: '#777777',
+      300: '#A0A0A0',
+      200: '#B7B7B7',
+      100: '#CECECE',
+    },
+
+    gradient: {
+      primary: 'linear-gradient(180deg, #FFCC21 0%, #FF963C 100%)',
+    },
   },
   fonts: {
     japanese: "'Noto Sans JP', sans-serif",
