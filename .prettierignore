@@ -1,0 +1,24 @@
+# Dependencies
+node_modules
+pnpm-lock.yaml
+
+# Build outputs
+dist
+build
+.vite
+
+# Coverage
+coverage
+
+# IDE
+.vscode
+.idea
+
+# Misc
+*.log
+.DS_Store
+
+# API schema (generated file)
+src/api/api.swagger.json
+
+
