@@ -1,73 +1,164 @@
-# React + TypeScript + Vite
+# Health-App
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A responsive health tracking web application built with React and TypeScript, featuring authentication, health metrics visualization, and meal tracking.
 
-Currently, two official plugins are available:
+## 🚀 Technology Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- **Framework:** React with TypeScript
+- **Build Tool:** Vite
+- **Data Fetching:** React Query (TanStack Query)
+- **Styling:** styled-components
+- **Testing:** Vitest (80%+ coverage target)
+- **State Management:** React Query + React Context (if needed)
+- **API Integration:** REST API with OpenAPI schema
+- **Code Quality:**
+  - ESLint for linting
+  - Prettier for code formatting
+  - TypeScript for type safety
 
-## React Compiler
+## 📁 Project Structure
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the ESLint configuration
-
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
-
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```
+health-app/
+├── src/
+│   ├── api/                            # API layer
+│   │   ├── client.ts                   # API client configuration
+│   │   ├── endpoints.ts                # API endpoint definitions
+│   │   └── types.ts                    # API response types
+│   │
+│   ├── assets/                         # Static assets (SVG icons, images)
+│   │   ├── icons/
+│   │   └── images/
+│   │
+│   ├── components/                     # Reusable components
+│   │   ├── common/                     # Generic shared components
+│   │   ├── layout/                     # Layout components
+│   │   └── features/                   # Feature-specific components
+│   │
+│   ├── hooks/                          # Custom hooks
+│   │   ├── useAuth.ts
+│   │   ├── useAchievement.ts
+│   │   ├── useHealthRecord.ts
+│   │   └── useMealRecord.ts
+│   │
+│   ├── pages/                          # Page components
+│   │   ├── TopPage/                    # Login page
+│   │   ├── MyPage/                     # Dashboard
+│   │   ├── AuthFailedPage/            # Auth error page
+│   │   └── NotFoundPage/              # 404 page
+│   │
+│   ├── routes/                         # Routing configuration
+│   ├── services/                       # Business logic layer
+│   ├── store/                          # State management
+│   ├── styles/                         # Global styles and theme
+│   ├── types/                          # TypeScript type definitions
+│   └── utils/                          # Utility functions
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## 🔑 Key Features
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+- User authentication with password protection
+- Health metrics tracking and visualization
+- Meal record management with infinite scrolling
+- Responsive design (415px - 1024px+)
+- Achievement tracking with visual indicators
+- Real-time notifications system
+- Accessibility-focused components
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+## 🏃‍♂️ Getting Started
+
+1. **Prerequisites**
+   - Node.js (v18 or higher)
+   - pnpm (v8 or higher)
+
+2. **Installation**
+   ```bash
+   # Clone the repository
+   git clone [repository-url]
+   cd health-app
+
+   # Install dependencies
+   pnpm install
+   ```
+
+3. **Development**
+   ```bash
+   # Start development server
+   pnpm dev
+
+   # Run tests
+   pnpm test
+
+   # Run tests with coverage
+   pnpm test:coverage
+
+   # Lint code
+   pnpm lint
+
+   # Format code
+   pnpm format
+   ```
+
+## 🌐 API Integration
+
+- Base URL: https://health_app_api.dev-arent.workers.dev
+- OpenAPI Schema: https://health_app_api.dev-arent.workers.dev/openapi
+- Authentication: Password-based with JWT token
+
+## 📱 Responsive Design
+
+- Mobile: 415px minimum
+- Desktop: 1024px maximum
+- Flexible breakpoints for optimal UX
+- No horizontal scrolling
+- Touch-friendly interface
+
+## 🎨 Design System
+
+### Typography
+- Japanese: Noto Sans JP (Regular 400, Bold 700)
+- Latin/Numbers: Inter (Regular 400, Bold 700)
+
+### Assets
+- SVG format for project assets
+- URL-based images from API responses
+
+## 🧪 Testing Strategy
+
+- Unit tests for utilities and hooks
+- Component tests with React Testing Library
+- Integration tests for pages
+- 80%+ code coverage requirement
+
+## 📦 Build and Deployment
+
+```bash
+# Build for production
+pnpm build
+
+# Preview production build
+pnpm preview
 ```
+
+## 🔒 Security Considerations
+
+- Secure authentication flow
+- Protected routes
+- API token management
+- Input validation and sanitization
+
+## 📝 Development Guidelines
+
+1. Follow TypeScript best practices
+2. Write tests for new features
+3. Maintain responsive design principles
+4. Keep accessibility in mind
+5. Document new components and utilities
+6. Follow ESLint and Prettier rules
+
+## 🤝 Contributing
+
+1. Branch naming: `feature/`, `bugfix/`, `hotfix/`
+2. Commit messages: Follow conventional commits
+3. PR template: Include description, testing steps, and screenshots
+4. Code review: Required before merge
