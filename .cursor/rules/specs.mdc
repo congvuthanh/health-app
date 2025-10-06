@@ -18,10 +18,18 @@ _The web application "Health-App"_
 - Use [React Query](https://tanstack.com/query/latest/docs/framework/react/installation) for data fetching
 - Use TypeScript as the application development language.
 - Use [styled-components](https://styled-components.com/) for styling
+  - **IMPORTANT: ALL styling MUST use the theme system defined in `src/styles/theme.ts`**
+  - **Always reference `theme.colors`, `theme.fonts`, `theme.typography`, and `theme.breakpoints`** in your styled-components
+  - **Never hardcode colors, fonts, typography, or breakpoints** - always use theme values
   - **Always use `rem` units instead of `px`** for all sizing values (fonts, spacing, dimensions, etc.)
   - Base font size is set to 62.5% (10px base), so **1rem = 10px**
   - Easy conversion: divide px by 10 (e.g., 24px = 2.4rem, 16px = 1.6rem, 48px = 4.8rem)
   - Use the `pxToRem()` utility function from `src/utils/pxToRem.ts` for conversions if needed
+  - **Theme System (`src/styles/theme.ts`):**
+    - **Colors:** Use `theme.colors` for all color values (primary, secondary, black variants, white, gradient)
+    - **Fonts:** Use `theme.fonts.japanese` for Japanese text and `theme.fonts.alphanumeric` for alphanumeric text
+    - **Typography:** Use `theme.typography` for all text styles (h1-h5, p1-p7) with regular/bold variants
+    - **Breakpoints:** Use `theme.breakpoints` for responsive design (mobile: 415px, tablet: 1024px, desktop: 1440px)
 - Implement Linter and Formatter packages to enforce consistency in coding style.
   - Linter: ESLint
   - Formatter: Prettier
@@ -36,16 +44,20 @@ _The web application "Health-App"_
 - Make sure to follow README.md during development
 - This App has an authentication (login) function. Please refer to the Functional-Requirements(has defined on Cursor rules) and OpenAPI schema for the specifications of the authentication function.
 - This App is available in both PC and Mobile sizes. Ensure that your implementation is responsive. However, the layout of the responsive design is up to you. As long as you follow the points below, the responsive design itself will not affect your results.
-  - Breakpoints:
-    - min 415px
-    - max 1024px
-    - can have more breakpoints beyond 415px and 1024px if needed to improve UX and prevent UI issues.
+  - **Breakpoints (defined in `src/styles/theme.ts`):**
+    - **ALWAYS use `theme.breakpoints` for media queries**
+    - Mobile: `theme.breakpoints.mobile` (415px)
+    - Tablet: `theme.breakpoints.tablet` (1024px)
+    - Desktop: `theme.breakpoints.desktop` (1440px)
+    - You can add additional breakpoints if needed to improve UX and prevent UI issues
   - Elements do not fall out of columns.
   - The width of the screen does not overflow (no horizontal scrolling or element clipping occurs).
   - Even on a Mobile-size screen, visibility of text and operability of the UI can be ensured as in a general web application.
 - Use the following image data format:
   - svg for assets stored in project directory /assets
   - url if we map it from API responses
-- The following fonts are used. All of them can be downloaded from Google Fonts.
-  - Japanese → Noto Sans JP Regular(400) and Bold(700): https://fonts.google.com/noto/specimen/Noto+Sans+JP
-  - Alphanumeric → Inter Regular(400) and Bold(700): https://fonts.google.com/specimen/Inter
+- **Fonts (defined in `src/styles/theme.ts`):**
+  - **ALWAYS use `theme.fonts` for font-family declarations**
+  - Japanese text: Use `theme.fonts.japanese` → Noto Sans JP Regular(400) and Bold(700): https://fonts.google.com/noto/specimen/Noto+Sans+JP
+  - Alphanumeric text: Use `theme.fonts.alphanumeric` → Inter Regular(400) and Bold(700): https://fonts.google.com/specimen/Inter
+  - **Typography styles:** Use `theme.typography` (h1-h5, p1-p7) for consistent text styling across the application

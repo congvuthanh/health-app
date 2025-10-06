@@ -1,0 +1,120 @@
+---
+globs: src/components/layout/Footer/index.tsx
+alwaysApply: false
+---
+
+# Footer Component Specifications
+
+## Overview
+
+The Footer component is a persistent navigation bar displayed at the bottom of all pages in the application. It provides secondary navigation links to important pages such as registration, company information, legal documents, and contact. The footer is fully responsive across desktop and mobile devices.
+
+## Design References
+
+- Desktop design: [link](./footer-pc.png)
+- Mobile design: [link](./footer-sp.png) (to be created)
+
+## Structure & Layout
+
+### Container
+
+- **Position**: Positioned at the bottom of the page
+- **Width**: 100% of viewport width
+- **Background**: `theme.colors.black[500]` (#414141)
+- **Display**: Flex layout for horizontal menu items
+- **Alignment**: Center-aligned content (both horizontally and vertically)
+- **Padding**: Appropriate vertical and horizontal padding for comfortable spacing
+
+## Navigation Menu Items
+
+The footer contains 6 navigation items displayed horizontally in the following order:
+
+1. **会員登録 (Member Registration)**
+   - Label: "会員登録"
+   - Link destination: # (placeholder)
+
+2. **運営会社 (Operating Company)**
+   - Label: "運営会社"
+   - Link destination: # (placeholder)
+
+3. **利用規約 (Terms of Service)**
+   - Label: "利用規約"
+   - Link destination: # (placeholder)
+
+4. **個人情報の取扱について (Privacy Policy)**
+   - Label: "個人情報の取扱について"
+   - Link destination: # (placeholder)
+
+5. **特定商取引法に基づく表記 (Commercial Transaction Act Notice)**
+   - Label: "特定商取引法に基づく表記"
+   - Link destination: # (placeholder)
+
+6. **お問い合わせ (Contact Us)**
+   - Label: "お問い合わせ"
+   - Link destination: # (placeholder)
+
+## Navigation Item Styling
+
+### Typography
+
+- **Font family**: `theme.fonts.japanese` (Noto Sans JP)
+- **Font size**: `theme.typography.p6.regular` (1rem/1.4rem, font-weight: 400)
+- **Line height**: Auto or as specified in typography settings
+
+### Color States
+
+- **Default state**:
+  - Text color: `theme.colors.white` (#FFFFFF)
+  - Text decoration: None
+- **Hover state**:
+  - Text color: `theme.colors.primary[400]` (#FF963C)
+  - Text decoration: None
+  - Transition: Smooth color transition (suggest: 0.2s ease)
+
+### Spacing
+
+- **Item separator**: Consider using a vertical divider or spacing between items
+- **Gap between items**: 2.4rem
+- **Padding per item**: 0.4rem for padding-y and 0.8rem for padding-x
+
+## Responsive Behavior
+
+### Desktop (Breakpoint: >= 1024px)
+
+- All 6 navigation items displayed horizontally in a single row
+- All 6 navigation items have border-left 1px with color is `theme.colors.black[400]` (#777777)
+- Items evenly spaced across the footer width
+- Adequate padding on left and right sides
+
+### Mobile (Breakpoint: < 1024px)
+
+- Navigation items may wrap to multiple rows if necessary
+- Maintain center alignment
+- Consider stacking items vertically or in 2 columns if horizontal space is insufficient
+- Ensure touch-friendly spacing between items (minimum 44x44px touch target)
+
+## Accessibility Requirements
+
+- All navigation links must be keyboard accessible (Tab navigation)
+- Use semantic HTML: `<footer>` element with `<nav>` for navigation links
+- Each link should use proper `<a>` anchor elements
+- Links should have focus states that match or complement hover states
+- Consider adding aria-label to the footer nav for screen readers (e.g., "Footer navigation")
+- Maintain sufficient color contrast ratio between text and background (WCAG AA: 4.5:1 minimum)
+
+## Component Implementation Notes
+
+- Use React Router's Link or NavLink components for navigation (even if links are currently placeholders)
+- Use styled-components for all styling
+- Implement responsive breakpoints using `theme.breakpoints.tablet` (1024px) and `theme.breakpoints.mobile` (415px)
+- Consider extracting navigation data into a configuration array for maintainability:
+  ```typescript
+  const footerLinks = [
+    { label: '会員登録', href: '#' },
+    { label: '運営会社', href: '#' },
+    // ... etc
+  ];
+  ```
+- Add appropriate TypeScript types for all props and navigation items
+- Ensure the footer remains at the bottom of the page even on pages with minimal content (consider using sticky footer techniques if needed)
+- Test keyboard navigation and ensure all interactive elements are accessible

@@ -33,6 +33,10 @@ health-app/
 │   ├── components/                     # Reusable components
 │   │   ├── common/                     # Generic shared components
 │   │   ├── layout/                     # Layout components
+│   │   │   ├── Header/
+│   │   │   │   ├── index.tsx
+│   │   │   │   ├── index.styles.ts
+│   │   │   │   └── index.test.tsx
 │   │   └── features/                   # Feature-specific components
 │   │
 │   ├── hooks/                          # Custom hooks
@@ -43,11 +47,17 @@ health-app/
 │   │
 │   ├── pages/                          # Page components
 │   │   ├── TopPage/                    # Login page
+│   │   │   ├── index.tsx
+│   │   │   ├── index.styles.ts
+│   │   │   └── index.test.tsx
 │   │   ├── MyPage/                     # Dashboard
 │   │   ├── AuthFailedPage/            # Auth error page
 │   │   └── NotFoundPage/              # 404 page
 │   │
 │   ├── routes/                         # Routing configuration
+│   │   ├── AppRouter.tsx
+│   │   ├── ProtectedRoute.tsx
+│   │   └── routes.ts
 │   ├── services/                       # Business logic layer
 │   ├── store/                          # State management
 │   ├── styles/                         # Global styles and theme

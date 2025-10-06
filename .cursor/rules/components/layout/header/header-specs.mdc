@@ -1,0 +1,277 @@
+---
+globs: src/components/layout/Header/index.tsx
+alwaysApply: false
+---
+
+# Header Component Specifications
+
+## Overview
+
+The Header component is a fixed navigation bar at the top of the application. It contains branding (logo), primary navigation menu items, and a hamburger menu for additional options. The header is responsive and adapts between desktop and mobile layouts.
+
+## Layout & Structure
+
+### Desktop Layout (> 1024px)
+
+- Fixed header at top of viewport
+- Height: `6.4rem`
+- Background: `theme.colors.black[500]`
+- Horizontal padding: `2.4rem`
+- Contains:
+  1. **Logo** (left-aligned)
+  2. **Primary Navigation Menu** (right side, visible)
+  3. **Hamburger Menu Button** (right-most)
+
+### Mobile/Tablet Layout (≤ 1024px)
+
+- Same fixed header structure
+- Height: `7rem`
+- Horizontal padding: `1.6rem`
+- Contains:
+  1. **Logo** (left-aligned)
+  2. **Primary Navigation Menu** (hidden text, keep icon visible)
+  3. **Hamburger Menu Button** (right-most, visible)
+
+## Components
+
+### 1. Logo
+
+- **Asset**: `/public/logo.svg`
+- **Size**: Height `3.2rem`, width auto
+- **Link**: Navigates to `/` (home page)
+- **Accessibility**: `aria-label="Healthy"`
+
+### 2. Primary Navigation Menu (Desktop Only)
+
+Display three navigation items horizontally with icons and labels:
+
+#### Navigation Items:
+
+1. **自分の記録 (My Records)**
+   - Icon: `src/assets/icons/ic-memo.svg`
+   - Link: `/myPage`
+   - Badge: None
+
+2. **チャレンジ (Challenge)**
+   - Icon: `src/assets/icons/ic-challenge.svg`
+   - Link: `#` (placeholder)
+   - Badge: None
+
+3. **お知らせ (Notifications)**
+   - Icon: `src/assets/icons/ic-info.svg`
+   - Link: `#` (placeholder)
+   - Badge: Display notification count (e.g., `1`)
+     - Position: Top-right corner of icon (absolute positioning)
+     - Background: `theme.colors.primary[500]`
+     - Color: `theme.colors.white`
+     - Shape: Circular badge
+     - Size: Min-width `1.6rem`, height `1.6rem`
+     - Font: Size `1rem`, weight `400`, line-height `1.2rem`
+
+#### Styling:
+
+- **Default State**:
+  - Text color: `theme.colors.white`
+  - Font: `theme.fonts.japanese`
+  - Typography: `theme.typography.p3.regular`
+  - Icon size: `3.2rem × 3.2rem`
+  - Gap between icon and label: `0.8rem`
+  - Gap between navigation items: `1.6rem`
+
+- **Hover State**:
+  - Text color: `theme.colors.primary[400]`
+  - Icon: Apply orange filter to match primary color
+  - Transition: `0.2s ease`
+
+- **Focus State**:
+  - Outline: `2px solid theme.colors.primary[400]`
+  - Outline offset: `2px`
+
+### 3. Hamburger Menu Button
+
+#### Icon States:
+
+- **Closed (default)**: `src/assets/icons/ic-menu.svg`
+- **Open**: `src/assets/icons/ic-close.svg`
+- **Icon Size**: `3.2rem × 3.2rem`
+
+#### Button Styling:
+
+- Background: None (transparent)
+- Border: None
+- Padding: `0.4rem`
+- Cursor: Pointer
+- Hover: Opacity `0.8`
+- Focus: Outline `2px solid theme.colors.primary[400]`, offset `2px`
+
+#### Accessibility:
+
+- `aria-expanded`: `true` when menu is open, `false` when closed
+- `aria-label`: "Open menu" when closed, "Close menu" when open
+
+### 4. Dropdown Menu (Hamburger Menu)
+
+#### Structure:
+
+- **Position**: Absolute, positioned directly below header
+- **Top offset**: `7rem` (header height)
+- **Alignment**: Right-aligned with the page edge
+- **Min-width**: `28rem`
+- **Background**: `theme.colors.black[400]`
+- **Box shadow**: `0 0.4rem 1.2rem rgba(0, 0, 0, 0.15)`
+- **Display**: Shown when hamburger button is clicked, hidden by default
+- **Role**: `role="menu"` for accessibility
+
+#### Dropdown Menu Items:
+
+Display seven menu items vertically:
+
+1. **自分の記録 (My Records)**
+   - Icon: `src/assets/icons/ic-memo.svg`
+   - Link: `/myPage`
+
+2. **チャレンジ (Challenge)**
+   - Icon: `src/assets/icons/ic-challenge.svg`
+   - Link: `#` (placeholder)
+
+3. **目標 (Goals)**
+   - Icon: `src/assets/icons/ic-flag.svg`
+   - Link: `#` (placeholder)
+
+4. **選択中のコース (Current Course)**
+   - Icon: `src/assets/icons/ic-meter.svg`
+   - Link: `#` (placeholder)
+
+5. **コラム一覧 (Articles)**
+   - Icon: `src/assets/icons/ic-stories.svg`
+   - Link: `#` (placeholder)
+
+6. **設定 (Settings)**
+   - Icon: `src/assets/icons/ic-settings.svg`
+   - Link: `#` (placeholder)
+
+7. **ログアウト (Logout)**
+   - Icon: `src/assets/icons/ic-logout.svg`
+   - Action: Execute logout function (no link)
+
+#### Menu Item Styling:
+
+- **Default State**:
+  - Full width
+  - Padding: `2.4rem 1.6rem`
+  - Background: `theme.colors.black[400]`
+  - Text color: `theme.colors.white`
+  - Font: `theme.fonts.japanese`
+  - Typography: `theme.typography.p3.regular`
+  - Border top: `1px solid rgba(65, 65, 65, 0.80)`
+  - Border bottom: `1px solid rgba(65, 65, 65, 0.80)`
+  - Display: Flex with icon and label
+  - Gap between icon and label: `0.8rem`
+  - Icon size: `3.2rem × 3.2rem`
+
+- **Hover/Focus State**:
+  - Background: `theme.colors.primary[400]`
+  - Transition: `background-color 0.2s ease`
+
+- **Focus Visible**:
+  - Outline: `2px solid theme.colors.primary[400]`
+  - Outline offset: `-2px` (inset)
+
+- **Accessibility**:
+  - Each item: `role="menuitem"`
+
+## Behavior
+
+### Menu Toggle
+
+- Clicking the hamburger button toggles the dropdown menu visibility
+- Menu state managed by `isMenuOpen` boolean state
+- Icon changes between menu and close based on state
+
+### Click Outside to Close
+
+- Clicking anywhere outside the dropdown menu or hamburger button closes the menu
+- Uses `useEffect` with event listener for click outside detection
+- References: `dropdownRef` for dropdown, `menuButtonRef` for button
+
+### Menu Item Click
+
+- Clicking any dropdown item closes the menu
+- If item has a `link`, navigate using React Router `Link`
+- If item has an `action` (logout), execute the function and navigate to `/`
+
+### Responsive Behavior
+
+- **Desktop (> 1024px)**: Show primary navigation, show hamburger button
+- **Mobile/Tablet (≤ 1024px)**: Hide primary navigation, show only hamburger button
+- Use `@media (max-width: ${theme.breakpoints.tablet})` for responsive styles
+
+## Technical Requirements
+
+### Component Type
+
+- Functional component using React hooks
+- TypeScript for type safety
+
+### State Management
+
+- `useState` for menu open/close state
+- `useRef` for dropdown and button references
+- `useEffect` for click outside handler
+
+### Routing
+
+- Use React Router `Link` component for navigation
+- Use `useNavigate` hook for programmatic navigation (logout)
+
+### Icons
+
+- Import all SVG icons as static assets
+- Use as `img` src attributes
+
+### Z-index
+
+- Header: `z-index: 1000` (fixed at top)
+- Dropdown: Inherits from header container
+
+### TypeScript Interfaces
+
+```typescript
+interface NavigationItem {
+  id: string;
+  label: string;
+  icon: string;
+  link: string;
+  badge?: number;
+}
+
+interface DropdownItem {
+  id: string;
+  label: string;
+  icon: string;
+  link?: string;
+  action?: () => void;
+}
+```
+
+## Theme Integration
+
+**CRITICAL**: All styling MUST use the theme system defined in `src/styles/theme.ts`.
+
+- **Colors**: Always use `theme.colors.*` (never hardcode hex values)
+- **Fonts**: Always use `theme.fonts.*` (japanese, alphanumeric)
+- **Typography**: Always use `theme.typography.*` (h1-h5, p1-p7)
+- **Breakpoints**: Always use `theme.breakpoints.*` (mobile, tablet, desktop)
+- **Units**: Always use `rem` units (never `px`)
+
+## Design References
+
+- Desktop design: `./header-pc.png`
+- Mobile design: `./header-sp.png`
+
+## Notes
+
+- The notification badge count should eventually be fetched from API or state management
+- Placeholder links (`#`) should be replaced with actual routes when those pages are implemented
+- Logout functionality should be implemented to clear authentication state
+- Ensure keyboard navigation and accessibility compliance
