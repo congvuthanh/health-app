@@ -3,18 +3,19 @@ import AuthFailedPage from '../pages/AuthFailedPage';
 import MyPage from '../pages/MyPage';
 import NotFoundPage from '../pages/NotFoundPage';
 import TopPage from '../pages/TopPage';
+import { routePath } from './path';
 
 const router = createBrowserRouter([
   {
-    path: '/',
+    path: routePath.TopPage,
     element: <TopPage />,
   },
   {
-    path: '/myPage',
+    path: routePath.MyPage,
     element: <MyPage />,
   },
   {
-    path: '/authenticationError',
+    path: routePath.AuthFailedPage,
     element: <AuthFailedPage />,
   },
   {
