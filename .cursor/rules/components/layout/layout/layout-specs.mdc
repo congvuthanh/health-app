@@ -1,0 +1,100 @@
+---
+globs: src/components/layout/Layout/index.tsx
+alwaysApply: false
+---
+
+# Layout Component Specifications
+
+## Component Purpose
+
+The Layout component serves as the main structural wrapper for all pages in the Health App, providing consistent header and footer positioning with dynamic content area.
+
+## Technical Requirements
+
+### Component Structure
+
+- Must use React Router's `Outlet` component for dynamic content rendering
+- Must include `Header` and `Footer` components from respective directories
+- Must be implemented using styled-components with theme system
+
+### Layout Behavior
+
+1. Header Requirements:
+   - Position: Fixed at the top of the viewport
+   - Z-index: Should be above main content
+   - Should remain visible during page scroll
+   - Height: According to Header component specs
+
+2. Footer Requirements:
+   - Position: Fixed at the bottom of the viewport
+   - Z-index: Should be above main content
+   - Should remain visible during page scroll
+   - Height: According to Footer component specs
+
+3. Main Content Area (Outlet):
+   - Should occupy remaining viewport height between header and footer
+   - Must have appropriate padding to prevent content overlap with fixed header/footer
+   - Should be scrollable when content exceeds viewport height
+   - Must maintain full width of viewport minus any padding/margins
+
+### Styling Requirements
+
+- All dimensions must use the `pxToRem()` utility for consistent sizing
+- Must use theme values from `src/styles/theme.ts`:
+  - Colors: Use `theme.colors`
+  - Typography: Use `theme.typography`
+  - Breakpoints: Use `theme.breakpoints`
+  - Fonts: Use `theme.fonts`
+
+### Responsive Design
+
+- Must be responsive across all breakpoints:
+  - Mobile: <= 415px (`theme.breakpoints.mobile`)
+  - Tablet: <= 1024px (`theme.breakpoints.tablet`)
+  - Desktop: <= 1440px (`theme.breakpoints.desktop`)
+- Layout should adjust padding/margins appropriately for each breakpoint
+- Content area should maintain proper spacing on all device sizes
+
+### Performance Considerations
+
+- Avoid unnecessary re-renders of the layout structure
+- Implement proper memoization where beneficial
+- Ensure smooth scrolling behavior
+
+### Accessibility Requirements
+
+- Proper landmark roles for header, main content, and footer
+- Maintain proper focus management
+- Ensure keyboard navigation works correctly
+- Proper heading hierarchy
+
+## File Structure
+
+```
+src/components/layout/Layout/
+├── index.tsx           # Main component implementation
+├── index.styles.ts     # Styled components definitions
+└── index.test.tsx      # Component tests
+```
+
+## Testing Requirements
+
+- Test component rendering
+- Test proper content display through Outlet
+- Test header and footer positioning
+- Test responsive behavior
+- Minimum 80% test coverage
+
+## Example Usage
+
+```tsx
+// Example of how the Layout component should be used
+<Layout>{/* Page content will be rendered here via Outlet */}</Layout>
+```
+
+## Dependencies
+
+- react-router-dom (for Outlet)
+- styled-components (for styling)
+- Header component
+- Footer component

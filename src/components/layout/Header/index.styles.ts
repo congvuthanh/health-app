@@ -76,7 +76,7 @@ export const NavItem = styled(Link)`
     border-radius: 0.2rem;
   }
 
-  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+  @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
     span {
       display: none;
     }
