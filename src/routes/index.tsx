@@ -1,9 +1,10 @@
+import ProtectedRoute from 'components/common/ProtectedRoute';
 import Layout from 'components/layout/Layout';
+import AuthFailedPage from 'pages/AuthFailedPage';
+import MyPage from 'pages/MyPage';
+import NotFoundPage from 'pages/NotFoundPage';
+import TopPage from 'pages/TopPage';
 import { createBrowserRouter, RouterProvider } from 'react-router';
-import AuthFailedPage from '../pages/AuthFailedPage';
-import MyPage from '../pages/MyPage';
-import NotFoundPage from '../pages/NotFoundPage';
-import TopPage from '../pages/TopPage';
 import { routePath } from './path';
 
 const router = createBrowserRouter([
@@ -17,7 +18,11 @@ const router = createBrowserRouter([
       },
       {
         path: routePath.MyPage,
-        element: <MyPage />,
+        element: (
+          <ProtectedRoute>
+            <MyPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: routePath.AuthFailedPage,

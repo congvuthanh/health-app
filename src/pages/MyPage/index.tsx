@@ -1,5 +1,3 @@
-import { useAuth } from 'contexts/AuthContext';
-import { Navigate } from 'react-router';
 import AchievementSection from './components/AchievementSection';
 import HealthRecordSection from './components/HealthRecordSection';
 import MealRecordsSection from './components/MealRecordsSection';
@@ -10,16 +8,6 @@ import {
 } from './index.styles';
 
 function MyPage() {
-  const { isAuthenticated, isLoading } = useAuth();
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-
-  if (!isAuthenticated) {
-    return <Navigate to="/authenticationError" replace />;
-  }
-
   return (
     <PageContainer>
       <TopSectionWrapper>
