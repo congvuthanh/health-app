@@ -10,7 +10,11 @@ import {
 } from './index.styles';
 
 function MyPage() {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isLoading } = useAuth();
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
 
   if (!isAuthenticated) {
     return <Navigate to="/authenticationError" replace />;

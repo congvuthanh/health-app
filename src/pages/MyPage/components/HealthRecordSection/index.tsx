@@ -1,5 +1,4 @@
 import type { GetMyDataRecordHealthDuration } from 'api/generated/schemas';
-import { durationOptions } from 'data/durationOptions';
 import { useHealthRecords } from 'hooks/useHealthRecords';
 import { useState } from 'react';
 import {
@@ -11,11 +10,10 @@ import {
   XAxis,
 } from 'recharts';
 import { theme } from 'styles/theme';
+import DurationFilterButtons from './components/DurationFilterButtons';
 import {
   ChartWrapper,
   ErrorContainer,
-  FilterButton,
-  FilterButtonsWrapper,
   LoadingContainer,
   RetryButton,
   SectionContainer,
@@ -54,17 +52,11 @@ const HealthRecordSection = () => {
     return (
       <SectionContainer>
         <LoadingContainer>データを読み込んでいます...</LoadingContainer>
-        <FilterButtonsWrapper>
-          {durationOptions.map((option) => (
-            <FilterButton
-              key={option.value}
-              $isActive={option.value === selectedDuration}
-              disabled
-            >
-              {option.label}
-            </FilterButton>
-          ))}
-        </FilterButtonsWrapper>
+        <DurationFilterButtons
+          selectedDuration={selectedDuration}
+          onDurationChange={setSelectedDuration}
+          disabled
+        />
       </SectionContainer>
     );
   }
@@ -76,17 +68,10 @@ const HealthRecordSection = () => {
           <div>データの取得に失敗しました</div>
           <RetryButton onClick={() => refetch()}>再試行</RetryButton>
         </ErrorContainer>
-        <FilterButtonsWrapper>
-          {durationOptions.map((option) => (
-            <FilterButton
-              key={option.value}
-              $isActive={option.value === selectedDuration}
-              onClick={() => setSelectedDuration(option.value)}
-            >
-              {option.label}
-            </FilterButton>
-          ))}
-        </FilterButtonsWrapper>
+        <DurationFilterButtons
+          selectedDuration={selectedDuration}
+          onDurationChange={setSelectedDuration}
+        />
       </SectionContainer>
     );
   }
@@ -157,17 +142,10 @@ const HealthRecordSection = () => {
           </ResponsiveContainer>
         )}
       </ChartWrapper>
-      <FilterButtonsWrapper>
-        {durationOptions.map((option) => (
-          <FilterButton
-            key={option.value}
-            $isActive={option.value === selectedDuration}
-            onClick={() => setSelectedDuration(option.value)}
-          >
-            {option.label}
-          </FilterButton>
-        ))}
-      </FilterButtonsWrapper>
+      <DurationFilterButtons
+        selectedDuration={selectedDuration}
+        onDurationChange={setSelectedDuration}
+      />
     </SectionContainer>
   );
 };
