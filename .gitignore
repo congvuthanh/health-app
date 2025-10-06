@@ -12,6 +12,7 @@ dist
 dist-ssr
 coverage
 *.local
+api/generated
 
 # Editor directories and files
 .vscode/*

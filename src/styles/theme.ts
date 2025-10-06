@@ -24,7 +24,7 @@ export const theme: DefaultTheme = {
     },
 
     gradient: {
-      primary: 'linear-gradient(180deg, #FFCC21 0%, #FF963C 100%)',
+      primary: 'linear-gradient(33deg, #ffcc21 8.75%, #ff963c 86.64%)',
     },
   },
   fonts: {

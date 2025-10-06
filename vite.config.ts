@@ -6,13 +6,11 @@ import { defineConfig } from 'vite';
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  server: {
-    origin: 'https://health_app_api.dev-arent.workers.dev',
-  },
   resolve: {
     alias: {
       assets: path.resolve(__dirname, './src/assets'),
       components: path.resolve(__dirname, './src/components'),
+      contexts: path.resolve(__dirname, './src/contexts'),
       data: path.resolve(__dirname, './src/data'),
       hooks: path.resolve(__dirname, './src/hooks'),
       pages: path.resolve(__dirname, './src/pages'),

@@ -5,14 +5,14 @@
  */
 
 // Icons
-import icChallenge from '../assets/icons/ic-challenge.svg';
-import icFlag from '../assets/icons/ic-flag.svg';
-import icInfo from '../assets/icons/ic-info.svg';
-import icLogout from '../assets/icons/ic-logout.svg';
-import icMemo from '../assets/icons/ic-memo.svg';
-import icMeter from '../assets/icons/ic-meter.svg';
-import icSettings from '../assets/icons/ic-settings.svg';
-import icStories from '../assets/icons/ic-stories.svg';
+import icChallenge from 'assets/icons/ic-challenge.svg';
+import icFlag from 'assets/icons/ic-flag.svg';
+import icInfo from 'assets/icons/ic-info.svg';
+import icLogout from 'assets/icons/ic-logout.svg';
+import icMemo from 'assets/icons/ic-memo.svg';
+import icMeter from 'assets/icons/ic-meter.svg';
+import icSettings from 'assets/icons/ic-settings.svg';
+import icStories from 'assets/icons/ic-stories.svg';
 
 // Types
 export interface NavigationItem {

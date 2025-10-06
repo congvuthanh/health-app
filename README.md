@@ -21,56 +21,43 @@ A responsive health tracking web application built with React and TypeScript, fe
 ```
 health-app/
 ├── src/
-│   ├── api/                            # API layer
-│   │   ├── client.ts                   # API client configuration
-│   │   ├── endpoints.ts                # API endpoint definitions
-│   │   └── types.ts                    # API response types
+│   ├── api/                    # API layer (see /src/api/README.md)
+│   │   ├── client.ts           # Axios client with auth interceptor
+│   │   ├── schemas/            # OpenAPI schema
+│   │   └── generated/          # Auto-generated types & hooks
 │   │
-│   ├── assets/                         # Static assets (SVG icons, images)
-│   │   ├── icons/
-│   │   └── images/
+│   ├── assets/                 # Static assets
+│   │   ├── icons/              # SVG icons
+│   │   └── images/             # Images
 │   │
-│   ├── components/                     # Reusable components
-│   │   ├── common/                     # Generic shared components
-│   │   ├── layout/                     # Layout components
-│   │   │   ├── Header/
-│   │   │   │   ├── index.tsx
-│   │   │   │   ├── index.styles.ts
-│   │   │   │   └── index.test.tsx
-│   │   └── features/                   # Feature-specific components
+│   ├── components/             # Reusable components
+│   │   ├── common/             # Generic shared components
+│   │   ├── layout/             # Layout components (Header, Footer, Layout)
+│   │   └── features/           # Feature-specific components
 │   │
-│   ├── constants/                      # Application constants
-│   │   ├── routes.ts                   # Route paths
-│   │   └── config.ts                    # App configuration
+│   ├── contexts/               # React contexts (Auth, etc.)
+│   ├── constants/              # Application constants
+│   ├── data/                   # Static data (menu items, etc.)
 │   │
-│   ├── data/                           # Static data
-│   │   └── headerMenuItems.ts                # Header menus
-│   │
-│   ├── hooks/                          # Custom hooks
-│   │   ├── useAuth.ts
+│   ├── hooks/                  # Custom React Query hooks
+│   │   ├── useAuthMutation.ts
 │   │   ├── useAchievement.ts
-│   │   ├── useHealthRecord.ts
-│   │   └── useMealRecord.ts
+│   │   ├── useHealthRecords.ts
+│   │   └── useMealRecords.ts
 │   │
-│   ├── pages/                          # Page components
-│   │   ├── TopPage/                    # Login page
-│   │   │   ├── index.tsx
-│   │   │   ├── index.styles.ts
-│   │   │   └── index.test.tsx
-│   │   ├── MyPage/                     # Dashboard
-│   │   ├── AuthFailedPage/            # Auth error page
-│   │   └── NotFoundPage/              # 404 page
+│   ├── pages/                  # Page components
+│   │   ├── TopPage/            # Login page (/)
+│   │   ├── MyPage/             # Dashboard (/myPage)
+│   │   ├── AuthFailedPage/     # Auth error (/authenticationError)
+│   │   └── NotFoundPage/       # 404 page
 │   │
-│   ├── routes/                         # Routing configuration
-│   │   ├── AppRouter.tsx
-│   │   ├── ProtectedRoute.tsx
-│   │   └── routes.ts
-│   ├── services/                       # Business logic layer
-│   ├── store/                          # State management
-│   ├── styles/                         # Global styles and theme
-│   ├── types/                          # TypeScript type definitions
-│   └── utils/                          # Utility functions
+│   ├── routes/                 # Routing configuration
+│   ├── styles/                 # Global styles, theme system
+│   ├── types/                  # TypeScript type definitions
+│   └── utils/                  # Utility functions & test helpers
 ```
+
+> **Note:** Each component folder contains `index.tsx`, `index.styles.ts`, and `index.test.tsx` following a consistent structure.
 
 ## 🔑 Key Features
 
@@ -120,9 +107,13 @@ health-app/
 
 ## 🌐 API Integration
 
-- Base URL: https://health_app_api.dev-arent.workers.dev
-- OpenAPI Schema: https://health_app_api.dev-arent.workers.dev/openapi
-- Authentication: Password-based with JWT token
+- **Base URL:** `https://health_app_api.dev-arent.workers.dev`
+- **Authentication:** Password-based with JWT Bearer token
+- **Data Fetching:** React Query with custom hooks
+- **Type Generation:** Orval (from OpenAPI schema)
+- **Testing:** MSW for API mocking
+
+> **📚 Full API Documentation:** See [`/src/api/README.md`](./src/api/README.md) for complete integration guide, available hooks, and usage examples.
 
 ## 📱 Responsive Design
 

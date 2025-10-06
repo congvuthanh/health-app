@@ -11,3 +11,11 @@ declare module '*.svg?react' {
   const content: FunctionComponent<SVGProps<SVGSVGElement>>;
   export default content;
 }
+
+interface ImportMetaEnv {
+  readonly VITE_API_URL: string;
+}
+
+interface ImportMeta {
+  readonly env: ImportMetaEnv;
+}

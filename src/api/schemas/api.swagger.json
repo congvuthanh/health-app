@@ -1,0 +1,979 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Health App API",
+    "description": "REST API for \"Arent Health App\". Provides data for authenticated users.",
+    "version": "1.0.0"
+  },
+  "components": {
+    "securitySchemes": {
+      "BearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "description": "Authentication using JWT token. Use the access token obtained from the /signUp endpoint."
+      }
+    },
+    "schemas": {
+      "Response": {
+        "type": "object",
+        "description": "Common schema for successful responses",
+        "required": ["status", "code", "message", "data"],
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Response status",
+            "example": "ok"
+          },
+          "code": {
+            "type": "integer",
+            "description": "HTTP status code",
+            "example": 200
+          },
+          "message": {
+            "type": "string",
+            "description": "Response message",
+            "example": "Fetched successfully"
+          },
+          "data": {
+            "type": "object",
+            "description": "Response data (varies by endpoint)"
+          }
+        }
+      },
+      "ErrorResponse": {
+        "type": "object",
+        "description": "Common schema for error responses",
+        "required": ["status", "code", "message", "errors"],
+        "properties": {
+          "status": {
+            "type": "string",
+            "description": "Response status",
+            "example": "error"
+          },
+          "code": {
+            "type": "integer",
+            "description": "HTTP status code",
+            "example": 400
+          },
+          "message": {
+            "type": "string",
+            "description": "Summary of error message",
+            "example": "リクエストパラメータが不正です"
+          },
+          "errors": {
+            "type": "array",
+            "description": "Array of detailed error information",
+            "items": {
+              "type": "object",
+              "required": ["message"],
+              "properties": {
+                "message": {
+                  "type": "string",
+                  "description": "Detailed error message",
+                  "example": "limitは1以上の数値である必要があります"
+                },
+                "stack": {
+                  "type": "string",
+                  "description": "Stack trace",
+                  "example": "Error: limitは1以上の数値である必要があります\n    at ..."
+                }
+              }
+            }
+          }
+        }
+      },
+      "PageInfo": {
+        "type": "object",
+        "description": "Paging information for Cursor Pagination",
+        "required": ["hasNextPage", "hasPreviousPage", "limit"],
+        "properties": {
+          "hasNextPage": {
+            "type": "boolean",
+            "description": "Whether the next page exists",
+            "example": true
+          },
+          "hasPreviousPage": {
+            "type": "boolean",
+            "description": "Whether the previous page exists",
+            "example": false
+          },
+          "startCursor": {
+            "type": "string",
+            "description": "Cursor of the first item on the current page",
+            "example": ""
+          },
+          "endCursor": {
+            "type": "string",
+            "description": "Cursor of the last item on the current page",
+            "example": "mnoMNO56"
+          },
+          "limit": {
+            "type": "integer",
+            "description": "Number of items per page",
+            "example": 10
+          }
+        }
+      }
+    }
+  },
+  "paths": {
+    "/signUp": {
+      "post": {
+        "responses": {
+          "200": {
+            "description": "Authentication successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["status", "code", "message", "data"],
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "ok"
+                    },
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Authentication successful"
+                    },
+                    "data": {
+                      "type": "object",
+                      "required": ["accessToken", "tokenType", "expiresIn"],
+                      "properties": {
+                        "accessToken": {
+                          "type": "string",
+                          "description": "JWT access token",
+                          "example": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                        },
+                        "tokenType": {
+                          "type": "string",
+                          "description": "Token type",
+                          "example": "Bearer"
+                        },
+                        "expiresIn": {
+                          "type": "integer",
+                          "description": "Token expiration time in seconds",
+                          "example": 3600
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": "error",
+                  "code": 400,
+                  "message": "リクエストボディが不正です",
+                  "errors": [
+                    {
+                      "message": "passwordフィールドが必要です",
+                      "stack": "Error: passwordフィールドが必要です\n at ..."
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Unauthorized",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": "error",
+                  "code": 401,
+                  "message": "認証に失敗しました",
+                  "errors": [
+                    {
+                      "message": "パスワードが正しくありません",
+                      "stack": "Error: パスワードが正しくありません\n at ..."
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "operationId": "postSignUp",
+        "parameters": [],
+        "description": "Authenticate user and issue access token upon successful authentication.",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["password"],
+                "properties": {
+                  "password": {
+                    "type": "string",
+                    "description": "Authentication password",
+                    "example": "password"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/validateToken": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Authentication successful",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["status", "code", "message", "data"],
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "ok"
+                    },
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Authentication successful"
+                    },
+                    "data": {
+                      "type": "object",
+                      "required": ["isAuthenticated", "tokenInfo"],
+                      "properties": {
+                        "isAuthenticated": {
+                          "type": "boolean",
+                          "description": "Authentication status",
+                          "example": true
+                        },
+                        "tokenInfo": {
+                          "type": "object",
+                          "description": "Token details",
+                          "required": ["issuedAt", "expiresAt"],
+                          "properties": {
+                            "issuedAt": {
+                              "type": "string",
+                              "format": "date-time",
+                              "description": "Token issued at",
+                              "example": "2025-01-20T10:30:00.000Z"
+                            },
+                            "expiresAt": {
+                              "type": "string",
+                              "format": "date-time",
+                              "description": "Token expires at",
+                              "example": "2025-01-20T11:30:00.000Z"
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Authentication failed",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": "error",
+                  "code": 401,
+                  "message": "認証に失敗しました",
+                  "errors": [
+                    {
+                      "message": "トークンの有効期限が切れています",
+                      "stack": "Error: トークンの有効期限が切れています\n at ..."
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "operationId": "getValidateToken",
+        "parameters": [],
+        "description": "Check the authentication status of the current token.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/myData/notification": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["status", "code", "message", "data"],
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "ok"
+                    },
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Fetched successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "通知一覧のデータ",
+                      "required": [
+                        "items",
+                        "pageInfo",
+                        "totalCount",
+                        "unreadNotificationCount"
+                      ],
+                      "properties": {
+                        "items": {
+                          "type": "array",
+                          "description": "通知のリスト",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "id",
+                              "title",
+                              "message",
+                              "createdAt",
+                              "isRead"
+                            ],
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "通知の一意識別子",
+                                "example": "notif123"
+                              },
+                              "title": {
+                                "type": "string",
+                                "description": "通知のタイトル",
+                                "example": "「体重・体脂肪率の記録」リマインダー"
+                              },
+                              "message": {
+                                "type": "string",
+                                "description": "通知の本文",
+                                "example": "今日の体重・体脂肪率を記録しましょう！"
+                              },
+                              "createdAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "description": "通知の作成日時",
+                                "example": "2025-01-20T10:30:00Z"
+                              },
+                              "isRead": {
+                                "type": "boolean",
+                                "description": "既読状態",
+                                "example": false
+                              }
+                            }
+                          }
+                        },
+                        "pageInfo": {
+                          "$ref": "#/components/schemas/PageInfo"
+                        },
+                        "totalCount": {
+                          "type": "integer",
+                          "description": "全通知の総件数",
+                          "minimum": 0,
+                          "example": 15
+                        },
+                        "unreadNotificationCount": {
+                          "type": "integer",
+                          "description": "未読通知の件数",
+                          "minimum": 0,
+                          "example": 3
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": "error",
+                  "code": 400,
+                  "message": "リクエストパラメータが不正です",
+                  "errors": [
+                    {
+                      "message": "limitは1以上の数値である必要があります",
+                      "stack": "Error: limitは1以上の数値である必要があります\n at ..."
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": "error",
+                  "code": 401,
+                  "message": "認証に失敗しました",
+                  "errors": [
+                    {
+                      "message": "トークンの有効期限が切れています",
+                      "stack": "Error: トークンの有効期限が切れています\n at ..."
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": "error",
+                  "code": 404,
+                  "message": "指定されたカーソルのデータが見つかりません",
+                  "errors": [
+                    {
+                      "message": "指定されたカーソルのデータが見つかりません",
+                      "stack": "Error: 指定された after cursor: notfound が見つかりません\n at ..."
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "operationId": "getMyDataNotification",
+        "parameters": [
+          {
+            "name": "after",
+            "in": "query",
+            "description": "Get data after the specified ID.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "before",
+            "in": "query",
+            "description": "Get data before the specified ID.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Specify the number of items to get (1-10).",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10,
+              "default": 10
+            }
+          }
+        ],
+        "description": "Get notification data.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/myData/achievement": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["status", "code", "message", "data"],
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "ok"
+                    },
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Fetched successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "「本日の達成率」データ",
+                      "required": [
+                        "date",
+                        "imageUrl",
+                        "altText",
+                        "achievementRate"
+                      ],
+                      "properties": {
+                        "date": {
+                          "type": "string",
+                          "format": "date-time",
+                          "description": "対象の日付(本日)",
+                          "example": "2025-05-21T00:00:00.000Z"
+                        },
+                        "imageUrl": {
+                          "type": "string",
+                          "format": "uri",
+                          "description": "コンテンツ背景画像のURL",
+                          "example": "https://placehold.jp/400x300.png"
+                        },
+                        "altText": {
+                          "type": "string",
+                          "description": "画像のalt属性用テキスト",
+                          "example": "alt用画像のサンプル"
+                        },
+                        "achievementRate": {
+                          "type": "number",
+                          "description": "達成率の数値（%）",
+                          "minimum": 0,
+                          "maximum": 100,
+                          "example": 75
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": "error",
+                  "code": 401,
+                  "message": "認証に失敗しました",
+                  "errors": [
+                    {
+                      "message": "トークンの有効期限が切れています",
+                      "stack": "Error: トークンの有効期限が切れています\n at ..."
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "operationId": "getMyDataAchievement",
+        "parameters": [],
+        "description": "Get the \"Today's Achievement Rate (本日の達成率)\" data.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/myData/record/meals": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["status", "code", "message", "data"],
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "ok"
+                    },
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Fetched successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "食事記録一覧のデータ",
+                      "required": ["items", "pageInfo", "totalCount"],
+                      "properties": {
+                        "items": {
+                          "type": "array",
+                          "description": "食事記録のリスト",
+                          "items": {
+                            "type": "object",
+                            "required": [
+                              "id",
+                              "createdAt",
+                              "type",
+                              "imageUrl",
+                              "altText"
+                            ],
+                            "properties": {
+                              "id": {
+                                "type": "string",
+                                "description": "食事記録の一意識別子",
+                                "example": "abcDEF12"
+                              },
+                              "createdAt": {
+                                "type": "string",
+                                "format": "date-time",
+                                "description": "食事記録の作成日時",
+                                "example": "2025-05-21T09:00:00.000Z"
+                              },
+                              "type": {
+                                "type": "string",
+                                "description": "食事の種類",
+                                "enum": [
+                                  "Breakfast",
+                                  "Lunch",
+                                  "Dinner",
+                                  "Snack"
+                                ],
+                                "example": "Dinner"
+                              },
+                              "imageUrl": {
+                                "type": "string",
+                                "format": "uri",
+                                "description": "食事の画像URL",
+                                "example": "https://example.com/images/dinner.jpg"
+                              },
+                              "altText": {
+                                "type": "string",
+                                "description": "画像のalt属性用テキスト",
+                                "example": "alt用画像のサンプル"
+                              }
+                            }
+                          }
+                        },
+                        "pageInfo": {
+                          "$ref": "#/components/schemas/PageInfo"
+                        },
+                        "totalCount": {
+                          "type": "integer",
+                          "description": "全データの総件数",
+                          "minimum": 0,
+                          "example": 20
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": "error",
+                  "code": 400,
+                  "message": "リクエストパラメータが不正です",
+                  "errors": [
+                    {
+                      "message": "limitは1以上の数値である必要があります",
+                      "stack": "Error: limitは1以上の数値である必要があります\n at ..."
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": "error",
+                  "code": 401,
+                  "message": "認証に失敗しました",
+                  "errors": [
+                    {
+                      "message": "トークンの有効期限が切れています",
+                      "stack": "Error: トークンの有効期限が切れています\n at ..."
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": "error",
+                  "code": 404,
+                  "message": "指定されたカーソルのデータが見つかりません",
+                  "errors": [
+                    {
+                      "message": "指定されたカーソルのデータが見つかりません",
+                      "stack": "Error: 指定された after cursor: xxxxxx が見つかりません\n at ..."
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "operationId": "getMyDataRecordMeals",
+        "parameters": [
+          {
+            "name": "after",
+            "in": "query",
+            "description": "Get data after the specified ID.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "before",
+            "in": "query",
+            "description": "Get data before the specified ID.",
+            "required": false,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "Specify the number of items to get (1-10).",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "minimum": 1,
+              "maximum": 10,
+              "default": 8
+            }
+          }
+        ],
+        "description": "Get \"Meal Record List(食事の記録)\" data. Supports Cursor Pagination and allows pagination control through query parameters.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    },
+    "/myData/record/health": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "required": ["status", "code", "message", "data"],
+                  "properties": {
+                    "status": {
+                      "type": "string",
+                      "example": "ok"
+                    },
+                    "code": {
+                      "type": "integer",
+                      "example": 200
+                    },
+                    "message": {
+                      "type": "string",
+                      "example": "Fetched successfully"
+                    },
+                    "data": {
+                      "type": "object",
+                      "description": "「体重・体脂肪率の記録」データ",
+                      "required": ["duration", "items"],
+                      "properties": {
+                        "duration": {
+                          "type": "string",
+                          "description": "データの期間",
+                          "enum": ["day", "week", "month", "year"],
+                          "example": "year"
+                        },
+                        "items": {
+                          "type": "array",
+                          "description": "「体重・体脂肪率の記録」のデータリスト",
+                          "items": {
+                            "type": "object",
+                            "required": ["date", "weight", "fatRate"],
+                            "properties": {
+                              "date": {
+                                "type": "string",
+                                "format": "date-time",
+                                "description": "記録日時",
+                                "example": "2025-04-30T15:00:00.000Z"
+                              },
+                              "weight": {
+                                "type": "number",
+                                "description": "体重（kg）",
+                                "minimum": 0,
+                                "example": 68
+                              },
+                              "fatRate": {
+                                "type": "number",
+                                "description": "体脂肪率（%）",
+                                "minimum": 0,
+                                "maximum": 100,
+                                "example": 22
+                              }
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "Bad Request",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": "error",
+                  "code": 400,
+                  "message": "無効なdurationパラメータです。有効な値は day, week, month, year のいずれかです。",
+                  "errors": [
+                    {
+                      "message": "無効なdurationパラメータです。有効な値は day, week, month, year のいずれかです。",
+                      "stack": "Error: 無効なdurationパラメータです。有効な値は day, week, month, year のいずれかです。\n at ..."
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "Forbidden",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": "error",
+                  "code": 401,
+                  "message": "認証に失敗しました",
+                  "errors": [
+                    {
+                      "message": "トークンの有効期限が切れています",
+                      "stack": "Error: トークンの有効期限が切れています\n at ..."
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "Not Found",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ErrorResponse"
+                },
+                "example": {
+                  "status": "error",
+                  "code": 404,
+                  "message": "指定されたdurationのデータが見つかりません",
+                  "errors": [
+                    {
+                      "message": "指定されたdurationのデータが見つかりません",
+                      "stack": "Error: 指定されたduration xxxxxx のデータが見つかりません\n at ..."
+                    }
+                  ]
+                }
+              }
+            }
+          }
+        },
+        "operationId": "getMyDataRecordHealth",
+        "parameters": [
+          {
+            "name": "duration",
+            "in": "query",
+            "description": "Specify the period of data to get. If not specified, return data by year.",
+            "required": false,
+            "schema": {
+              "type": "string",
+              "enum": ["day", "week", "month", "year"],
+              "default": "year"
+            }
+          }
+        ],
+        "description": "Get \"Weight & Body Fat Record (体重・体脂肪率の記録)\" data. You can get data within the specified range by day, week, month, or year.",
+        "security": [
+          {
+            "BearerAuth": []
+          }
+        ]
+      }
+    }
+  }
+}

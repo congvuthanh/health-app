@@ -1,3 +1,4 @@
+import { useAuth } from 'contexts/AuthContext';
 import React from 'react';
 import { Outlet } from 'react-router';
 import Footer from '../Footer';
@@ -5,9 +6,11 @@ import Header from '../Header';
 import { LayoutContainer, MainContent } from './index.styles';
 
 export const Layout: React.FC = () => {
+  const { isAuthenticated } = useAuth();
+
   return (
     <LayoutContainer>
-      <Header />
+      {isAuthenticated && <Header />}
       <MainContent role="main">
         <Outlet />
       </MainContent>

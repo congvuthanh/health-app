@@ -15,6 +15,50 @@
     ],
     "skipLibCheck": true,
     "baseUrl": "./src",
+    "paths": {
+      "assets/*": [
+        "./assets/*"
+      ],
+      "components/*": [
+        "./components/*"
+      ],
+      "contexts/*": [
+        "./contexts/*"
+      ],
+      "data/*": [
+        "./data/*"
+      ],
+      "hooks/*": [
+        "./hooks/*"
+      ],
+      "pages/*": [
+        "./pages/*"
+      ],
+      "routes/*": [
+        "./routes/*"
+      ],
+      "styles/*": [
+        "./styles/*"
+      ],
+      "utils/*": [
+        "./utils/*"
+      ],
+      "api/*": [
+        "./api/*"
+      ],
+      "constants/*": [
+        "./constants/*"
+      ],
+      "services/*": [
+        "./services/*"
+      ],
+      "store/*": [
+        "./store/*"
+      ],
+      "types/*": [
+        "./types/*"
+      ]
+    },
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
