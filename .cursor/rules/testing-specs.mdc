@@ -1,0 +1,849 @@
+---
+globs: *.test.tsx
+alwaysApply: false
+---
+
+# Testing Specifications
+
+## Overview
+
+This document outlines the testing strategy, tools, and best practices for the Health-App project. All code should maintain a minimum of 80% test coverage across lines, functions, branches, and statements.
+
+## Testing Stack
+
+- **Testing Framework:** Vitest 3.x
+- **Testing Library:** React Testing Library 16.x
+- **DOM Matchers:** @testing-library/jest-dom
+- **User Interactions:** @testing-library/user-event (**ALWAYS prefer `userEvent` over `fireEvent`**)
+- **Coverage Tool:** @vitest/coverage-v8
+- **Test Environment:** jsdom
+
+### Why userEvent over fireEvent?
+
+**CRITICAL: ALWAYS use `userEvent` instead of `fireEvent`** for simulating user interactions.
+
+`userEvent` provides more realistic behavior by:
+
+- Simulating the complete sequence of events that happen during real user interactions
+- Automatically handling focus, blur, hover, and other event chains
+- Providing better validation of user interactions
+- Catching issues that `fireEvent` might miss
+
+**Only use `fireEvent` when:**
+
+- Testing low-level DOM events that don't have a `userEvent` equivalent
+- You specifically need to test a single synthetic event in isolation
+- `userEvent` doesn't support the specific interaction (extremely rare)
+
+## Test Scripts
+
+```bash
+# Run all tests once
+pnpm test
+
+# Run tests in watch mode (interactive)
+pnpm test:watch
+
+# Run tests with UI interface
+pnpm test:ui
+
+# Run tests with coverage report
+pnpm test:coverage
+```
+
+## Project Structure
+
+```
+src/
+├── components/
+│   ├── common/
+│   ├── layout/
+│   │   └── Header/
+│   │       ├── index.tsx
+│   │       ├── index.styles.ts
+│   │       └── index.test.tsx        # Component tests
+│   └── features/
+├── hooks/
+│   ├── useAuth.ts
+│   └── useAuth.test.ts               # Hook tests
+├── pages/
+│   └── MyPage/
+│       ├── index.tsx
+│       └── index.test.tsx            # Integration tests
+├── utils/
+│   ├── pxToRem.ts
+│   ├── pxToRem.test.ts              # Utility tests
+│   └── test/                         # Test utilities
+│       ├── index.ts
+│       ├── test-utils.tsx            # Custom render functions
+│       └── mockData.ts               # Mock data generators
+└── services/
+    ├── api.ts
+    └── api.test.ts                   # Service tests
+```
+
+## Test Types
+
+### 1. Unit Tests
+
+Test individual functions, utilities, and hooks in isolation.
+
+**Example: Utility Function Test**
+
+```typescript
+// src/utils/pxToRem.test.ts
+import { describe, expect, it } from 'vitest';
+import { pxToRem } from './pxToRem';
+
+describe('pxToRem', () => {
+  it('should convert px to rem correctly', () => {
+    expect(pxToRem(10)).toBe('1rem');
+    expect(pxToRem(24)).toBe('2.4rem');
+  });
+
+  it('should handle edge cases', () => {
+    expect(pxToRem(0)).toBe('0rem');
+    expect(pxToRem(-10)).toBe('-1rem');
+  });
+});
+```
+
+**Example: Custom Hook Test**
+
+```typescript
+// src/hooks/useAuth.test.ts
+import { renderHook, waitFor } from '@testing-library/react';
+import { describe, expect, it } from 'vitest';
+import { useAuth } from './useAuth';
+
+describe('useAuth', () => {
+  it('should initialize with unauthenticated state', () => {
+    const { result } = renderHook(() => useAuth());
+    expect(result.current.isAuthenticated).toBe(false);
+  });
+
+  it('should handle login successfully', async () => {
+    const { result } = renderHook(() => useAuth());
+
+    await waitFor(() => {
+      result.current.login('user@example.com', 'password');
+    });
+
+    expect(result.current.isAuthenticated).toBe(true);
+  });
+});
+```
+
+### 2. Component Tests
+
+Test components with their props, state, and user interactions.
+
+**Required Test Coverage for Components:**
+
+- ✅ Rendering (default state, with props, conditional rendering)
+- ✅ User Interactions (clicks, form inputs, keyboard events)
+- ✅ State Changes (internal state updates)
+- ✅ Props (all prop variations)
+- ✅ Accessibility (ARIA attributes, roles, labels)
+- ✅ Responsive Behavior (if applicable)
+
+**Example: Component Test Structure**
+
+```typescript
+// src/components/common/Button/index.test.tsx
+import { renderWithProviders, screen } from 'utils/test';
+import { describe, expect, it, vi } from 'vitest';
+import { Button } from './index';
+
+describe('Button Component', () => {
+  describe('Rendering', () => {
+    it('should render with text', () => {
+      renderWithProviders(<Button>Click me</Button>);
+      expect(screen.getByRole('button')).toHaveTextContent('Click me');
+    });
+
+    it('should apply variant styles', () => {
+      renderWithProviders(<Button variant="primary">Primary</Button>);
+      const button = screen.getByRole('button');
+      expect(button).toBeInTheDocument();
+    });
+  });
+
+  describe('Interactions', () => {
+    it('should call onClick when clicked', async () => {
+      const handleClick = vi.fn();
+      const { user } = renderWithProviders(
+        <Button onClick={handleClick}>Click</Button>
+      );
+
+      // ✅ ALWAYS use userEvent
+      await user.click(screen.getByRole('button'));
+      expect(handleClick).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not call onClick when disabled', async () => {
+      const handleClick = vi.fn();
+      const { user } = renderWithProviders(
+        <Button onClick={handleClick} disabled>Click</Button>
+      );
+
+      await user.click(screen.getByRole('button'));
+      expect(handleClick).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('Accessibility', () => {
+    it('should have correct aria-label', () => {
+      renderWithProviders(<Button aria-label="Submit form">Submit</Button>);
+      expect(screen.getByLabelText('Submit form')).toBeInTheDocument();
+    });
+
+    it('should be keyboard accessible', async () => {
+      const handleClick = vi.fn();
+      const { user } = renderWithProviders(
+        <Button onClick={handleClick}>Click</Button>
+      );
+
+      // ✅ userEvent properly simulates keyboard navigation
+      await user.tab();
+      await user.keyboard('{Enter}');
+      expect(handleClick).toHaveBeenCalled();
+    });
+  });
+});
+```
+
+### 3. Integration Tests (Page Tests)
+
+Test complete pages with multiple components working together.
+
+**Example: Page Integration Test**
+
+```typescript
+// src/pages/MyPage/index.test.tsx
+import { renderWithProviders, screen, waitFor } from 'utils/test';
+import { describe, expect, it, vi } from 'vitest';
+import { MyPage } from './index';
+
+// Mock API calls
+vi.mock('api/endpoints', () => ({
+  fetchUserData: vi.fn(() => Promise.resolve({ name: 'John Doe' })),
+}));
+
+describe('MyPage', () => {
+  it('should load and display user data', async () => {
+    renderWithProviders(<MyPage />);
+
+    expect(screen.getByText('Loading...')).toBeInTheDocument();
+
+    await waitFor(() => {
+      expect(screen.getByText('John Doe')).toBeInTheDocument();
+    });
+  });
+
+  it('should handle navigation between sections', async () => {
+    const { user } = renderWithProviders(<MyPage />);
+
+    await user.click(screen.getByText('Profile'));
+    expect(screen.getByText('Profile Section')).toBeVisible();
+
+    await user.click(screen.getByText('Settings'));
+    expect(screen.getByText('Settings Section')).toBeVisible();
+  });
+});
+```
+
+## Testing Utilities
+
+### Custom Render Function
+
+Use `renderWithProviders` for all component tests to automatically wrap with necessary providers and get a `user` instance.
+
+```typescript
+// src/utils/test/test-utils.tsx
+import { renderWithProviders, screen, waitFor } from 'utils/test';
+
+// Automatically includes:
+// - BrowserRouter (for React Router)
+// - ThemeProvider (for styled-components)
+// - userEvent setup (as `user` property)
+// - Any other global providers
+
+// Usage:
+const { user } = renderWithProviders(<MyComponent />);
+await user.click(screen.getByRole('button'));
+```
+
+**Important:** The `renderWithProviders` function returns a `user` instance from `@testing-library/user-event` that should be used for all user interactions.
+
+### Mock Data Generators
+
+Create reusable mock data generators in `src/utils/test/mockData.ts`.
+
+```typescript
+// src/utils/test/mockData.ts
+export const createMockUser = (overrides?: Partial<User>): User => ({
+  id: '1',
+  name: 'Test User',
+  email: 'test@example.com',
+  ...overrides,
+});
+
+export const createMockArticle = (overrides?: Partial<Article>): Article => ({
+  id: '1',
+  title: 'Test Article',
+  content: 'Test content',
+  date: '2025-01-01',
+  ...overrides,
+});
+```
+
+## Best Practices
+
+### ✅ DO
+
+1. **ALWAYS use `userEvent` for user interactions**:
+
+   ```typescript
+   // ✅ GOOD - Use userEvent
+   const { user } = renderWithProviders(<Button onClick={handleClick} />);
+   await user.click(screen.getByRole('button'));
+   await user.type(screen.getByLabelText('Email'), 'test@example.com');
+   await user.keyboard('{Enter}');
+   await user.tab();
+
+   // ❌ BAD - Don't use fireEvent (only for rare edge cases)
+   fireEvent.click(button);
+   fireEvent.change(input, { target: { value: 'test' } });
+   ```
+
+2. **Use semantic queries** (prefer user-facing queries):
+
+   ```typescript
+   // Good
+   screen.getByRole('button', { name: 'Submit' });
+   screen.getByLabelText('Email address');
+   screen.getByText('Welcome');
+
+   // Avoid
+   screen.getByTestId('submit-button');
+   screen.getByClassName('btn-primary');
+   ```
+
+3. **Test user behavior, not implementation**:
+
+   ```typescript
+   // Good - tests what user sees
+   expect(screen.getByText('Success!')).toBeVisible();
+
+   // Bad - tests implementation
+   expect(component.state.isSuccess).toBe(true);
+   ```
+
+4. **Use async utilities for asynchronous operations**:
+
+   ```typescript
+   // Good
+   await waitFor(() => {
+     expect(screen.getByText('Loaded')).toBeInTheDocument();
+   });
+
+   // Also good
+   const element = await screen.findByText('Loaded');
+   ```
+
+5. **Mock external dependencies**:
+
+   ```typescript
+   vi.mock('react-router', async () => {
+     const actual = await vi.importActual('react-router');
+     return {
+       ...actual,
+       useNavigate: () => mockNavigate,
+     };
+   });
+   ```
+
+6. **Clean up after tests**:
+   ```typescript
+   beforeEach(() => {
+     vi.clearAllMocks();
+   });
+   ```
+
+### ❌ DON'T
+
+1. **Don't use `fireEvent` for user interactions**:
+
+   ```typescript
+   // ❌ BAD - fireEvent doesn't simulate real user behavior
+   fireEvent.click(button);
+   fireEvent.change(input, { target: { value: 'text' } });
+   fireEvent.keyDown(element, { key: 'Enter' });
+
+   // ✅ GOOD - userEvent simulates complete interaction chains
+   const { user } = renderWithProviders(<Component />);
+   await user.click(button);
+   await user.type(input, 'text');
+   await user.keyboard('{Enter}');
+   ```
+
+2. **Don't test implementation details**:
+
+   ```typescript
+   // Bad
+   expect(wrapper.find('.internal-class')).toExist();
+   expect(component.state.value).toBe(5);
+   ```
+
+3. **Don't use arbitrary test IDs unnecessarily**:
+
+   ```typescript
+   // Bad
+   <button data-testid="submit-btn">Submit</button>
+   screen.getByTestId('submit-btn');
+
+   // Good
+   <button type="submit">Submit</button>
+   screen.getByRole('button', { name: 'Submit' });
+   ```
+
+4. **Don't test external libraries**:
+
+   ```typescript
+   // Bad - testing React Router internals
+   expect(useNavigate).toBeDefined();
+
+   // Good - test your usage of it
+   expect(mockNavigate).toHaveBeenCalledWith('/myPage');
+   ```
+
+5. **Don't forget to await userEvent calls**:
+
+   ```typescript
+   // ❌ BAD - Missing await
+   user.click(button);
+   expect(handleClick).toHaveBeenCalled();
+
+   // ✅ GOOD - Always await userEvent
+   await user.click(button);
+   expect(handleClick).toHaveBeenCalled();
+   ```
+
+## userEvent vs fireEvent Comparison
+
+**Always prefer `userEvent` for realistic user interactions:**
+
+```typescript
+// ❌ BAD - Using fireEvent
+import { fireEvent } from '@testing-library/react';
+
+it('should handle click', () => {
+  renderWithProviders(<Button onClick={handleClick} />);
+  fireEvent.click(screen.getByRole('button'));
+  expect(handleClick).toHaveBeenCalled();
+});
+
+// ✅ GOOD - Using userEvent
+it('should handle click', async () => {
+  const { user } = renderWithProviders(<Button onClick={handleClick} />);
+  await user.click(screen.getByRole('button'));
+  expect(handleClick).toHaveBeenCalled();
+});
+
+// ❌ BAD - fireEvent doesn't properly simulate typing
+fireEvent.change(input, { target: { value: 'hello' } });
+
+// ✅ GOOD - userEvent types character by character (realistic)
+await user.type(input, 'hello');
+
+// ❌ BAD - fireEvent only fires keyDown
+fireEvent.keyDown(element, { key: 'Enter', code: 'Enter' });
+
+// ✅ GOOD - userEvent fires keyDown, keyPress, and keyUp
+await user.keyboard('{Enter}');
+```
+
+## Query Priority (React Testing Library)
+
+Use queries in this priority order:
+
+1. **Accessible to everyone** (screen readers):
+   - `getByRole`
+   - `getByLabelText`
+   - `getByPlaceholderText`
+   - `getByText`
+
+2. **Semantic queries**:
+   - `getByAltText`
+   - `getByTitle`
+
+3. **Test IDs** (last resort):
+   - `getByTestId`
+
+## Mocking Strategies
+
+### Mock API Calls
+
+```typescript
+vi.mock('api/endpoints', () => ({
+  fetchUserData: vi.fn(),
+}));
+
+import { fetchUserData } from 'api/endpoints';
+(fetchUserData as vi.Mock).mockResolvedValue({ name: 'John' });
+```
+
+### Mock React Router
+
+```typescript
+const mockNavigate = vi.fn();
+vi.mock('react-router', async () => {
+  const actual = await vi.importActual('react-router');
+  return {
+    ...actual,
+    useNavigate: () => mockNavigate,
+    useParams: () => ({ id: '123' }),
+  };
+});
+```
+
+### Mock React Query
+
+```typescript
+vi.mock('@tanstack/react-query', () => ({
+  useQuery: vi.fn(() => ({
+    data: mockData,
+    isLoading: false,
+    error: null,
+  })),
+}));
+```
+
+## Coverage Requirements
+
+Minimum coverage thresholds (configured in `vite.config.ts`):
+
+- **Lines:** 80%
+- **Functions:** 80%
+- **Branches:** 80%
+- **Statements:** 80%
+
+### Files Excluded from Coverage:
+
+- `node_modules/`
+- `**/*.test.{ts,tsx}`
+- `**/*.spec.{ts,tsx}`
+- `**/*.d.ts`
+- `**/*.config.{js,ts}`
+- `**/mockData.ts`
+- `dist/`
+- `.cursor/`
+- `coverage/`
+
+## Accessibility Testing
+
+Every component should include accessibility tests:
+
+```typescript
+describe('Accessibility', () => {
+  it('should have proper ARIA labels', () => {
+    renderWithProviders(<Component />);
+    expect(screen.getByLabelText('Descriptive label')).toBeInTheDocument();
+  });
+
+  it('should have correct roles', () => {
+    renderWithProviders(<Component />);
+    expect(screen.getByRole('navigation')).toBeInTheDocument();
+  });
+
+  it('should be keyboard navigable', async () => {
+    const { user } = renderWithProviders(<Component />);
+    await user.tab();
+    expect(screen.getByRole('button')).toHaveFocus();
+  });
+});
+```
+
+## Responsive Testing
+
+For components with responsive behavior:
+
+```typescript
+describe('Responsive Behavior', () => {
+  it('should render all elements regardless of viewport', () => {
+    renderWithProviders(<Header />);
+
+    // Desktop elements
+    expect(screen.getByRole('navigation')).toBeInTheDocument();
+
+    // Mobile elements
+    expect(screen.getByLabelText('Open menu')).toBeInTheDocument();
+  });
+});
+```
+
+## Snapshot Testing
+
+Use snapshots sparingly, only for:
+
+- Static content that rarely changes
+- Complex DOM structures that need structural validation
+
+```typescript
+it('should match snapshot', () => {
+  const { container } = renderWithProviders(<Component />);
+  expect(container).toMatchSnapshot();
+});
+```
+
+## Performance Testing
+
+For components with performance concerns:
+
+```typescript
+import { act } from '@testing-library/react';
+
+it('should render efficiently with large datasets', () => {
+  const items = Array.from({ length: 1000 }, (_, i) => ({ id: i }));
+
+  const start = performance.now();
+  renderWithProviders(<List items={items} />);
+  const end = performance.now();
+
+  expect(end - start).toBeLessThan(1000); // 1 second max
+});
+```
+
+## Continuous Integration
+
+Tests run automatically on:
+
+- Pull requests
+- Commits to main/master branch
+- Pre-commit hooks (if configured)
+
+All tests must pass before merging.
+
+## Common Testing Patterns
+
+### Testing Forms
+
+```typescript
+it('should submit form with valid data', async () => {
+  const handleSubmit = vi.fn();
+  const { user } = renderWithProviders(<Form onSubmit={handleSubmit} />);
+
+  // userEvent types character by character and triggers all events
+  await user.type(screen.getByLabelText('Email'), 'test@example.com');
+  await user.type(screen.getByLabelText('Password'), 'password123');
+  await user.click(screen.getByRole('button', { name: 'Submit' }));
+
+  expect(handleSubmit).toHaveBeenCalledWith({
+    email: 'test@example.com',
+    password: 'password123',
+  });
+});
+
+it('should show validation errors', async () => {
+  const { user } = renderWithProviders(<Form />);
+
+  // Clear input after typing
+  await user.type(screen.getByLabelText('Email'), 'invalid');
+  await user.clear(screen.getByLabelText('Email'));
+  await user.tab(); // Trigger blur event
+
+  expect(screen.getByText('Email is required')).toBeInTheDocument();
+});
+```
+
+### Testing Modals
+
+```typescript
+it('should open and close modal', async () => {
+  const { user } = renderWithProviders(<ModalComponent />);
+
+  // userEvent properly handles focus management
+  await user.click(screen.getByRole('button', { name: 'Open Modal' }));
+  expect(screen.getByRole('dialog')).toBeVisible();
+
+  await user.click(screen.getByRole('button', { name: 'Close' }));
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+});
+
+it('should close modal with Escape key', async () => {
+  const { user } = renderWithProviders(<ModalComponent />);
+
+  await user.click(screen.getByRole('button', { name: 'Open Modal' }));
+  expect(screen.getByRole('dialog')).toBeVisible();
+
+  // userEvent properly simulates keyboard interactions
+  await user.keyboard('{Escape}');
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+});
+```
+
+### Testing Loading States
+
+```typescript
+it('should show loading state', () => {
+  renderWithProviders(<Component isLoading={true} />);
+  expect(screen.getByText('Loading...')).toBeInTheDocument();
+});
+
+it('should show error state', () => {
+  renderWithProviders(<Component error="Failed to load" />);
+  expect(screen.getByText('Failed to load')).toBeInTheDocument();
+});
+```
+
+### Testing Keyboard Navigation
+
+```typescript
+it('should navigate with keyboard', async () => {
+  const { user } = renderWithProviders(<Navigation />);
+
+  // userEvent properly simulates tab navigation
+  await user.tab();
+  expect(screen.getByRole('link', { name: 'Home' })).toHaveFocus();
+
+  await user.tab();
+  expect(screen.getByRole('link', { name: 'About' })).toHaveFocus();
+
+  // Shift+Tab to go backwards
+  await user.keyboard('{Shift>}{Tab}{/Shift}');
+  expect(screen.getByRole('link', { name: 'Home' })).toHaveFocus();
+});
+
+it('should activate button with Enter or Space', async () => {
+  const handleClick = vi.fn();
+  const { user } = renderWithProviders(<Button onClick={handleClick} />);
+
+  await user.tab();
+  await user.keyboard('{Enter}');
+  expect(handleClick).toHaveBeenCalledTimes(1);
+
+  await user.keyboard(' '); // Space key
+  expect(handleClick).toHaveBeenCalledTimes(2);
+});
+```
+
+### Testing Select and Dropdown Interactions
+
+```typescript
+it('should select option from dropdown', async () => {
+  const { user } = renderWithProviders(<Select options={options} />);
+
+  // userEvent handles complex select interactions
+  await user.click(screen.getByRole('combobox'));
+  await user.click(screen.getByRole('option', { name: 'Option 2' }));
+
+  expect(screen.getByRole('combobox')).toHaveTextContent('Option 2');
+});
+
+it('should type and select with autocomplete', async () => {
+  const { user } = renderWithProviders(<Autocomplete />);
+
+  const input = screen.getByRole('combobox');
+
+  // userEvent simulates real typing which triggers onChange
+  await user.type(input, 'Jav');
+
+  // Wait for autocomplete suggestions
+  expect(await screen.findByRole('option', { name: 'JavaScript' })).toBeInTheDocument();
+
+  await user.click(screen.getByRole('option', { name: 'JavaScript' }));
+  expect(input).toHaveValue('JavaScript');
+});
+```
+
+## userEvent API Reference
+
+### Common userEvent Methods
+
+```typescript
+const { user } = renderWithProviders(<Component />);
+
+// Click interactions
+await user.click(element);              // Single click
+await user.dblClick(element);           // Double click
+await user.tripleClick(element);        // Triple click
+await user.pointer({ keys: '[MouseRight]' }); // Right click
+
+// Keyboard interactions
+await user.keyboard('Hello World');     // Type text
+await user.keyboard('{Enter}');         // Press Enter
+await user.keyboard('{Shift>}A{/Shift}'); // Shift+A
+await user.tab();                       // Tab to next element
+await user.tab({ shift: true });        // Shift+Tab (backwards)
+
+// Form interactions
+await user.type(input, 'text');         // Type into input
+await user.clear(input);                // Clear input value
+await user.selectOptions(select, 'option1'); // Select option
+await user.upload(fileInput, file);     // Upload file
+
+// Hover interactions
+await user.hover(element);              // Hover over element
+await user.unhover(element);            // Remove hover
+
+// Clipboard interactions
+await user.copy();                      // Copy selected text
+await user.cut();                       // Cut selected text
+await user.paste('text');               // Paste text
+```
+
+### Advanced Keyboard Patterns
+
+```typescript
+// Multiple keys
+await user.keyboard('{Control>}A{/Control}'); // Ctrl+A
+await user.keyboard('{Meta>}K{/Meta}'); // Cmd+K (Mac) or Win+K (Windows)
+
+// Special keys
+await user.keyboard('{Escape}');
+await user.keyboard('{Backspace}');
+await user.keyboard('{Delete}');
+await user.keyboard('{ArrowDown}');
+await user.keyboard('{Home}');
+await user.keyboard('{End}');
+```
+
+## Debugging Tests
+
+### Visual Debugging
+
+```typescript
+import { screen } from '@testing-library/react';
+
+// Print current DOM
+screen.debug();
+
+// Print specific element
+screen.debug(screen.getByRole('button'));
+```
+
+### Query Suggestions
+
+```typescript
+// Get suggestions for available queries
+screen.logTestingPlaygroundURL();
+```
+
+### Run Single Test
+
+```bash
+# Run specific file
+pnpm test Header.test.tsx
+
+# Run specific test
+pnpm test -t "should render header"
+```
+
+## Resources
+
+- [Vitest Documentation](https://vitest.dev/)
+- [React Testing Library](https://testing-library.com/react)
+- [user-event Documentation](https://testing-library.com/docs/user-event/intro)
+- [Jest-DOM Matchers](https://github.com/testing-library/jest-dom)
+- [Common Testing Mistakes](https://kentcdodds.com/blog/common-mistakes-with-react-testing-library)
