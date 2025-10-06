@@ -1,0 +1,343 @@
+---
+alwaysApply: false
+---
+
+# API Integration Guide
+
+## Overview
+
+This Health App uses a RESTful API to fetch user data. All API integration follows these patterns:
+
+- **API Endpoint:** `https://health_app_api.dev-arent.workers.dev` (configured in `vite.config.ts` under `server.origin`)
+- **OpenAPI Schema:** Available at `https://health_app_api.dev-arent.workers.dev/openapi`
+- **Swagger File:** Local copy stored in `/src/api/api.swagger.json`
+- **Authentication:** JWT Bearer token authentication
+- **Environment Variables:** API URL is available via `import.meta.env.BASE_URL` (configured in Vite)
+
+## Tools & Libraries
+
+### 1. React Query (TanStack Query v5)
+
+- **Purpose:** Data fetching, caching, and state management
+- **Documentation:** https://tanstack.com/query/v5/docs/framework/react/installation
+- **Usage:** Create custom hooks in `/src/hooks/` directory (e.g., `useAuth.ts`, `useAchievement.ts`, `useMealRecords.ts`)
+
+### 2. Orval
+
+- **Purpose:** Generate TypeScript types and API client from OpenAPI/Swagger schema
+- **Documentation:** https://orval.dev/installation
+- **Configuration:** Generate types from `/src/api/api.swagger.json`
+- **Generated Files:** Place in `/src/api/` directory (e.g., `types.ts`, `endpoints.ts`)
+
+## API Structure
+
+### Base Response Format
+
+All successful responses follow this structure:
+
+```typescript
+{
+  status: "ok",
+  code: 200,
+  message: "Fetched successfully",
+  data: { /* endpoint-specific data */ }
+}
+```
+
+All error responses follow this structure:
+
+```typescript
+{
+  status: "error",
+  code: 400 | 401 | 404,
+  message: "Error summary",
+  errors: [
+    {
+      message: "Detailed error message",
+      stack?: "Error stack trace"
+    }
+  ]
+}
+```
+
+## Available Endpoints
+
+### 1. Authentication
+
+#### POST `/signUp`
+
+- **Purpose:** Authenticate user and obtain JWT access token
+- **Request Body:**
+  ```typescript
+  {
+    password: string;
+  }
+  ```
+- **Response:**
+  ```typescript
+  {
+    accessToken: string,
+    tokenType: "Bearer",
+    expiresIn: number // seconds
+  }
+  ```
+- **Status Codes:** 200 (success), 400 (bad request), 401 (unauthorized)
+
+#### GET `/validateToken`
+
+- **Purpose:** Validate current JWT token
+- **Authentication:** Required (Bearer token)
+- **Response:**
+  ```typescript
+  {
+    isAuthenticated: boolean,
+    tokenInfo: {
+      issuedAt: string, // ISO date-time
+      expiresAt: string // ISO date-time
+    }
+  }
+  ```
+- **Status Codes:** 200 (valid), 401 (invalid/expired)
+
+### 2. My Data Endpoints (All require authentication)
+
+#### GET `/myData/achievement`
+
+- **Purpose:** Get today's achievement rate data
+- **Response:**
+  ```typescript
+  {
+    date: string, // ISO date-time
+    imageUrl: string, // URI
+    altText: string,
+    achievementRate: number // 0-100
+  }
+  ```
+
+#### GET `/myData/notification`
+
+- **Purpose:** Get notification list with pagination
+- **Query Parameters:**
+  - `after?: string` - Cursor for next page
+  - `before?: string` - Cursor for previous page
+  - `limit?: number` - Items per page (1-10, default: 10)
+- **Response:**
+  ```typescript
+  {
+    items: Array<{
+      id: string,
+      title: string,
+      message: string,
+      createdAt: string, // ISO date-time
+      isRead: boolean
+    }>,
+    pageInfo: {
+      hasNextPage: boolean,
+      hasPreviousPage: boolean,
+      startCursor?: string,
+      endCursor?: string,
+      limit: number
+    },
+    totalCount: number,
+    unreadNotificationCount: number
+  }
+  ```
+
+#### GET `/myData/record/meals`
+
+- **Purpose:** Get meal records list with pagination
+- **Query Parameters:**
+  - `after?: string` - Cursor for next page
+  - `before?: string` - Cursor for previous page
+  - `limit?: number` - Items per page (1-10, default: 8)
+- **Response:**
+  ```typescript
+  {
+    items: Array<{
+      id: string,
+      createdAt: string, // ISO date-time
+      type: "Breakfast" | "Lunch" | "Dinner" | "Snack",
+      imageUrl: string, // URI
+      altText: string
+    }>,
+    pageInfo: PageInfo,
+    totalCount: number
+  }
+  ```
+
+#### GET `/myData/record/health`
+
+- **Purpose:** Get weight and body fat records
+- **Query Parameters:**
+  - `duration?: "day" | "week" | "month" | "year"` - Time period (default: "year")
+- **Response:**
+  ```typescript
+  {
+    duration: "day" | "week" | "month" | "year",
+    items: Array<{
+      date: string, // ISO date-time
+      weight: number, // kg
+      fatRate: number // 0-100 %
+    }>
+  }
+  ```
+
+## Pagination Pattern
+
+This API uses **Cursor Pagination** (not offset-based):
+
+- Use `after` cursor to fetch next page
+- Use `before` cursor to fetch previous page
+- `pageInfo` contains:
+  - `hasNextPage` / `hasPreviousPage` - Boolean flags
+  - `startCursor` / `endCursor` - Cursors for pagination
+  - `limit` - Items per page
+
+## Custom Hooks Pattern
+
+Create custom hooks in `/src/hooks/` following this pattern:
+
+```typescript
+// Example: /src/hooks/useAchievement.ts
+import { useQuery } from '@tanstack/react-query';
+import { getMyDataAchievement } from '@/api/endpoints';
+
+export const useAchievement = () => {
+  return useQuery({
+    queryKey: ['achievement'],
+    queryFn: getMyDataAchievement,
+    // Add authentication headers
+    // Add error handling
+  });
+};
+```
+
+## Authentication Flow
+
+1. **Login:** Call `/signUp` with password → Store `accessToken` (localStorage/sessionStorage)
+2. **Authenticated Requests:** Include `Authorization: Bearer {accessToken}` header
+3. **Token Validation:** Use `/validateToken` to check token status
+4. **Token Expiry:** Handle 401 errors → Redirect to login page (`/authenticationError`)
+
+## Error Handling
+
+- **400 Bad Request:** Invalid parameters
+- **401 Unauthorized:** Missing/invalid/expired token → Redirect to `/authenticationError`
+- **404 Not Found:** Resource not found (e.g., invalid cursor)
+
+## File Structure
+
+```
+src/api/
+├── api.swagger.json       # OpenAPI schema (source of truth)
+├── client.ts              # API client configuration (axios/fetch)
+├── endpoints.ts           # Generated API endpoint functions (via Orval)
+└── types.ts               # Generated TypeScript types (via Orval)
+
+src/hooks/
+├── useAuth.ts             # Authentication hooks (login, logout, validate)
+├── useAchievement.ts      # Achievement data hook
+├── useNotifications.ts    # Notifications with pagination
+├── useMealRecords.ts      # Meal records with pagination
+└── useHealthRecords.ts    # Weight/body fat records
+```
+
+## Important Notes
+
+1. **Always use generated types** from Orval for type safety
+2. **Always include authentication headers** for protected endpoints
+3. **Handle loading and error states** in custom hooks
+4. **Use React Query's built-in caching** to optimize performance
+5. **Implement proper error boundaries** to catch API errors
+6. **Store sensitive data (tokens) securely** - consider security best practices
+7. **Follow the project structure** defined in README.md
+8. **Image URLs** from API are already full URLs - use directly in `<img src={imageUrl} />`
+
+## Example Implementation
+
+### 1. Generate Types with Orval
+
+```bash
+# Configure orval.config.ts to generate from /src/api/api.swagger.json
+# Run: npx orval
+```
+
+### 2. Create API Client
+
+```typescript
+// src/api/client.ts
+import axios from 'axios';
+
+// Base URL is configured in vite.config.ts under server.origin
+// and can be accessed via import.meta.env.BASE_URL
+export const apiClient = axios.create({
+  baseURL: import.meta.env.BASE_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+});
+
+// Add interceptor for auth token
+apiClient.interceptors.request.use((config) => {
+  const token = localStorage.getItem('accessToken');
+  if (token) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  return config;
+});
+```
+
+### 3. Create Custom Hook
+
+```typescript
+// src/hooks/useMealRecords.ts
+import { useQuery } from '@tanstack/react-query';
+import { apiClient } from '@/api/client';
+import type { MealRecordsResponse } from '@/api/types';
+
+interface UseMealRecordsParams {
+  limit?: number;
+  after?: string;
+  before?: string;
+}
+
+export const useMealRecords = (params?: UseMealRecordsParams) => {
+  return useQuery<MealRecordsResponse>({
+    queryKey: ['mealRecords', params],
+    queryFn: async () => {
+      const { data } = await apiClient.get('/myData/record/meals', {
+        params,
+      });
+      return data;
+    },
+  });
+};
+```
+
+### 4. Use in Component
+
+```typescript
+// src/pages/MyPage/index.tsx
+import { useMealRecords } from '@/hooks/useMealRecords';
+
+export const MyPage = () => {
+  const { data, isLoading, error } = useMealRecords({ limit: 8 });
+
+  if (isLoading) return <div>Loading...</div>;
+  if (error) return <div>Error loading meals</div>;
+
+  return (
+    <div>
+      {data?.data.items.map((meal) => (
+        <img key={meal.id} src={meal.imageUrl} alt={meal.altText} />
+      ))}
+    </div>
+  );
+};
+```
+
+## Testing
+
+- Mock API responses in tests using `vitest` and `@tanstack/react-query` testing utilities
+- Create mock data in `/src/utils/test/mockData.ts`
+- Test loading, success, and error states for all custom hooks

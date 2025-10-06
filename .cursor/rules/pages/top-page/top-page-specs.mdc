@@ -1,0 +1,370 @@
+---
+globs: src/pages/TopPage/index.tsx
+alwaysApply: false
+---
+
+# Top Page (Login Page) - Technical Specifications
+
+## 1. Routing Configuration
+
+- **URL Path:** `/`
+- **Route Behavior:**
+  - If user is already authenticated → redirect to `/myPage`
+  - If user is not authenticated → display login form
+
+## 2. Page Components Structure
+
+### 2.1 Layout
+
+- **Full-screen gradient background:**
+  - Must cover 100% viewport height (100vh)
+  - Use gradient from theme: `theme.colors.gradient` or define custom gradient
+- **Centered login form container**
+- **Footer component:** Use existing Footer layout component with all links set to `href="#"`
+
+### 2.2 Logo
+
+- **Asset:** `/logo.svg`
+- **Color:** White
+- **Position:** Centered above the login form
+
+### 2.3 Login Form
+
+- **Single input field:**
+  - Type: `password`
+  - Placeholder: `パスワードを入力` (Input password in Japanese)
+  - Password masking enabled (displays as `***` for security)
+  - Mobile optimization: Add `font-size: 1.6rem` or higher to prevent auto-zoom on iOS
+- **Submit button:**
+  - Text: `ログイン` (Login in Japanese)
+  - Background color: `theme.colors.black600`
+  - Type: `submit`
+
+## 3. Authentication Logic
+
+### 3.1 API Integration
+
+- **Endpoint:** Use authentication endpoint from `https://health_app_api.dev-arent.workers.dev`
+- **Request:**
+  - Send password field value as `password` parameter
+- **Response:**
+  - **Success (200):** Returns object with access token → Store token → Redirect to `/myPage`
+  - **Failure (401):** Display error message
+- **Test Credentials:**
+  - Correct password: `"password"` → Returns access token
+  - Any other string → Returns 401 error
+
+### 3.2 Form Submission Handling
+
+- **Prevent multiple submissions:**
+  - Disable submit button during authentication request
+  - Show loading state if appropriate
+  - Re-enable button after API response (success or error)
+- **On successful authentication:**
+  - Store access token (localStorage, sessionStorage, or context)
+  - Redirect to `/myPage`
+- **On authentication failure:**
+  - Display error message below input field
+  - Keep user on login page
+  - Allow retry
+
+## 4. Form Validation with Zod & React Hook Form
+
+### 4.1 Required Packages
+
+- **Zod:** For schema validation and type inference
+  - Package: `zod`
+  - Use for defining validation schema
+- **React Hook Form:** For form state management and validation
+  - Package: `react-hook-form`
+  - Use with `@hookform/resolvers/zod` for Zod integration
+
+### 4.2 Zod Schema Definition
+
+Create a validation schema for the login form:
+
+```typescript
+import { z } from 'zod';
+
+// Define the login form schema
+export const loginFormSchema = z.object({
+  password: z
+    .string()
+    .min(1, 'パスワードを入力してください') // Required field validation
+    .min(4, 'パスワードは4文字以上である必要があります'), // Optional: minimum length
+});
+
+// Infer TypeScript type from schema
+export type LoginFormData = z.infer<typeof loginFormSchema>;
+```
+
+**Validation Rules:**
+
+- **Required field:** Password must not be empty
+- **Error message (empty):** `パスワードを入力してください` (Please enter password)
+- **Optional constraints:** Add minimum length or other rules as needed
+
+### 4.3 React Hook Form Integration
+
+```typescript
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+// In your component:
+const {
+  register,
+  handleSubmit,
+  formState: { errors, isSubmitting },
+  setError,
+} = useForm<LoginFormData>({
+  resolver: zodResolver(loginFormSchema),
+  mode: 'onSubmit', // Validate on submit
+});
+```
+
+**Configuration:**
+
+- **Resolver:** Use `zodResolver(loginFormSchema)` to connect Zod with React Hook Form
+- **Validation mode:** `onSubmit` (validate when form is submitted)
+- **Type safety:** Use inferred `LoginFormData` type for type-safe form data
+
+### 4.4 Form Field Registration
+
+```typescript
+<input
+  type="password"
+  placeholder="パスワードを入力"
+  {...register('password')}
+  aria-invalid={errors.password ? 'true' : 'false'}
+  aria-describedby={errors.password ? 'password-error' : undefined}
+/>
+```
+
+**Requirements:**
+
+- Use `{...register('password')}` to register the input field
+- Add `aria-invalid` attribute based on error state
+- Add `aria-describedby` to link input with error message
+
+### 4.5 Client-Side Validation Error Display
+
+```typescript
+{errors.password && (
+  <ErrorMessage id="password-error" role="alert">
+    {errors.password.message}
+  </ErrorMessage>
+)}
+```
+
+**Error Display Requirements:**
+
+- Show error message from `errors.password.message`
+- Display below the password input field
+- Color: `#FA3040` (red)
+- Typography: Use theme typography (e.g., `theme.typography.p3.regular`)
+- Include `role="alert"` for accessibility
+- Include `id` that matches `aria-describedby` on input
+
+### 4.6 Form Submission Handler
+
+```typescript
+const onSubmit = async (data: LoginFormData) => {
+  try {
+    // Call authentication API with data.password
+    const response = await authenticateUser(data.password);
+
+    // Store token and redirect on success
+    storeAuthToken(response.token);
+    navigate('/myPage');
+  } catch (error) {
+    // Handle API errors (401, network errors, etc.)
+    if (error.status === 401) {
+      setError('password', {
+        type: 'manual',
+        message: 'パスワードが正しくありません。',
+      });
+    } else {
+      setError('password', {
+        type: 'manual',
+        message: 'エラーが発生しました。もう一度お試しください。',
+      });
+    }
+  }
+};
+
+// In JSX:
+<form onSubmit={handleSubmit(onSubmit)}>
+  {/* form fields */}
+</form>
+```
+
+**Submission Logic:**
+
+- Use `handleSubmit(onSubmit)` to wrap submit handler
+- React Hook Form automatically prevents submission if validation fails
+- `isSubmitting` state is automatically managed during async submission
+- Use `setError` to manually set API error messages
+
+### 4.7 Submit Button State Management
+
+```typescript
+<button type="submit" disabled={isSubmitting}>
+  {isSubmitting ? 'ログイン中...' : 'ログイン'}
+</button>
+```
+
+**Requirements:**
+
+- Use `isSubmitting` from React Hook Form to disable button during submission
+- Prevents multiple form submissions automatically
+- Optional: Change button text during submission for better UX
+- Re-enable automatically after submission completes (success or error)
+
+## 5. Validation & Error Handling Summary
+
+### 5.1 Client-Side Validation (Zod)
+
+- **Required field validation:**
+  - If password field is empty → Zod shows validation error: `パスワードを入力してください`
+  - Form submission is prevented by React Hook Form
+  - No API request is sent
+- **Additional validation rules (optional):**
+  - Minimum length validation (e.g., 4 characters)
+  - Custom validation rules as needed
+  - Error messages defined in Zod schema
+
+### 5.2 API Error Handling
+
+- **401 Authentication Error:**
+  - Use `setError('password', { ... })` to set error programmatically
+  - Display error message: `パスワードが正しくありません。`
+  - Error text color: `#FA3040` (red)
+  - Position: Below password input field
+  - See visual reference: `./top-page-error.png`
+- **Other errors (network, server errors):**
+  - Display generic error message: `エラーが発生しました。もう一度お試しください。`
+  - Use same styling and position as authentication error
+
+### 5.3 Error Message Styling
+
+- **Color:** `#FA3040` (red)
+- **Typography:** Use theme typography (e.g., `theme.typography.p3.regular`)
+- **Position:** Below input field, visible and clear
+- **Accessibility:**
+  - Include `role="alert"` for screen reader announcement
+  - Link error to input using `aria-describedby` and matching `id`
+  - Set `aria-invalid="true"` on input when error exists
+
+## 6. UX & Interaction Design
+
+### 6.1 Hover States
+
+- **All clickable elements must have visible hover states:**
+  - Submit button: Add hover effect (e.g., opacity change, color darken)
+  - Footer links: Add hover effect
+  - Design specifics are flexible, but change must be visible
+
+### 6.2 Mobile Responsiveness
+
+- **Prevent zoom on input focus:**
+  - Set `input` font-size to at least `1.6rem` (16px)
+  - Add viewport meta tag if not present: `<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">`
+- **Responsive layout:**
+  - Form should be centered and appropriately sized on all devices
+  - Test on mobile breakpoint: `theme.breakpoints.mobile` (415px)
+
+### 6.3 Accessibility
+
+- **Form accessibility:**
+  - Use semantic HTML (`<form>`, `<label>`, `<input>`, `<button>`)
+  - Associate label with input using `htmlFor` and `id`
+  - Add `aria-label` or visible label for password field
+  - Add `aria-describedby` to link input with error message (handled by React Hook Form integration)
+  - Error messages must have `role="alert"` for screen reader announcement
+- **Keyboard navigation:**
+  - Ensure all interactive elements are keyboard accessible
+  - Tab order must be logical
+
+## 7. State Management
+
+### 7.1 Form State (Managed by React Hook Form)
+
+- Password input value (managed by `register`)
+- Loading state: `isSubmitting` from React Hook Form
+- Error state: `errors.password` from React Hook Form
+- Error message: `errors.password.message`
+
+**Note:** React Hook Form handles all form state automatically. No need for manual `useState` for form fields.
+
+### 7.2 Authentication State
+
+- Track authentication status (use React Context or state management)
+- Check on mount: if authenticated, redirect to `/myPage`
+- Store access token after successful authentication
+
+## 8. Implementation Guidelines
+
+### 8.1 File Structure
+
+```
+src/pages/TopPage/
+├── index.tsx              # Main page component
+├── index.styles.ts        # Styled-components (REQUIRED)
+└── index.test.tsx         # Integration tests
+```
+
+### 8.2 Required Packages & Dependencies
+
+- **Form Validation:**
+  - `zod` - Schema validation
+  - `react-hook-form` - Form state management
+  - `@hookform/resolvers` - Zod resolver for React Hook Form
+- **Navigation:**
+  - Use `useAppNavigate` hook for navigation
+- **API:**
+  - Use React Query for API calls (if applicable)
+- **Authentication:**
+  - Consider creating `useAuth` hook for authentication logic
+
+### 8.3 Testing Requirements
+
+- **Unit tests:**
+  - Zod schema validation
+  - Form validation logic
+  - Error handling functions
+- **Integration tests:**
+  - Form submission with valid password
+  - Form submission with invalid password
+  - Form submission with empty password (Zod validation)
+  - Redirect behavior when already authenticated
+  - Error message display from API
+  - Submit button disabled during submission (`isSubmitting` state)
+  - React Hook Form integration
+- **Target coverage:** 80%+
+
+## 9. Visual References
+
+### 9.1 Default State
+
+- **Desktop & Mobile:** See `./top-page.png`
+  - Gradient background covering full viewport
+  - White logo centered
+  - Password input with placeholder text
+  - Black submit button with "ログイン" text
+
+### 9.2 Error State
+
+- **Desktop & Mobile:** See `./top-page-error.png`
+  - Same as default state
+  - Red error message below input: `パスワードが正しくありません。`
+  - Error color: `#FA3040`
+
+## 10. Technical Constraints
+
+- **Theme System:** Use theme values from `src/styles/theme.ts`
+- **Styling:** Use styled-components with rem units
+- **Typography:** Use `theme.fonts.japanese` for Japanese text
+- **Routing:** Use React Router v7
+- **Type Safety:** Use TypeScript with proper type definitions
+- **Form Validation:** Use Zod + React Hook Form
+- **Code Quality:** Follow ESLint and Prettier rules
