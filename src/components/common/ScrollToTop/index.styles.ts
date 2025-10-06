@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 
-export const ScrollButton = styled.button`
+export const ScrollButton = styled.button<{ $isVisible: boolean }>`
   position: fixed;
   bottom: 14.5rem;
   right: 9rem;
@@ -17,6 +17,11 @@ export const ScrollButton = styled.button`
   align-items: center;
   justify-content: center;
   padding: 0;
+
+  /* Visibility controls */
+  opacity: ${({ $isVisible }) => ($isVisible ? 1 : 0)};
+  visibility: ${({ $isVisible }) => ($isVisible ? 'visible' : 'hidden')};
+  pointer-events: ${({ $isVisible }) => ($isVisible ? 'auto' : 'none')};
 
   &:focus-visible {
     outline: 0.2rem solid ${({ theme }) => theme.colors.primary[500]};

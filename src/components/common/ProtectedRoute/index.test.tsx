@@ -99,4 +99,3 @@ describe('ProtectedRoute', () => {
     expect(mockNavigate).not.toHaveBeenCalled();
   });
 });
-

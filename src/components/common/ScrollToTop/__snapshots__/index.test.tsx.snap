@@ -3,12 +3,18 @@
 exports[`ScrollToTop > Snapshot > matches snapshot 1`] = `
 <button
   aria-label="ページのトップへ戻る"
-  class="sc-bRKDuR isOYpy"
+  class="sc-bRKDuR fJyhPG"
   type="button"
 >
   <img
-    alt=""
-    class="sc-hvigdm kTZjvI"
+    alt="default"
+    class="sc-hvigdm cGmgfQ"
+    src="data:image/svg+xml,%3csvg%20width='48'%20height='48'%20viewBox='0%200%2048%2048'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20d='M24%200.5C36.9787%200.5%2047.5%2011.0213%2047.5%2024C47.5%2036.9787%2036.9787%2047.5%2024%2047.5C11.0213%2047.5%200.5%2036.9787%200.5%2024C0.5%2011.0213%2011.0213%200.5%2024%200.5Z'%20stroke='%23414141'%20stroke-opacity='0.8'/%3e%3cpath%20d='M30.5853%2028.042L24.0003%2021.6579L17.4153%2028.042L16.5391%2027.1925L24.0003%2019.959L31.4615%2027.1925L30.5853%2028.042Z'%20fill='%23414141'%20fill-opacity='0.8'/%3e%3c/svg%3e"
+  />
+  <img
+    alt="hover"
+    class="sc-fhHczv iealsO"
+    src="data:image/svg+xml,%3csvg%20width='48'%20height='48'%20viewBox='0%200%2048%2048'%20fill='none'%20xmlns='http://www.w3.org/2000/svg'%3e%3cpath%20d='M24%200C37.2548%200%2048%2010.7452%2048%2024C48%2037.2548%2037.2548%2048%2024%2048C10.7452%2048%200%2037.2548%200%2024C0%2010.7452%2010.7452%200%2024%200Z'%20fill='%23FF963C'/%3e%3cpath%20d='M30.5853%2028.042L24.0003%2021.6579L17.4153%2028.042L16.5391%2027.1925L24.0003%2019.959L31.4615%2027.1925L30.5853%2028.042Z'%20fill='white'%20stroke='white'/%3e%3c/svg%3e"
   />
 </button>
 `;
