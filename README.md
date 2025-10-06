@@ -2,15 +2,84 @@
 
 A responsive health tracking web application built with React and TypeScript, featuring authentication, health metrics visualization, and meal tracking.
 
+## 📑 Table of Contents
+
+- [📋 Overview](#-overview)
+- [🚀 Technology Stack](#-technology-stack)
+- [📁 Project Structure](#-project-structure)
+- [🔑 Key Features](#-key-features)
+  - [Authentication & Authorization](#authentication--authorization)
+  - [Dashboard (My Page)](#dashboard-my-page)
+  - [User Interface](#user-interface)
+  - [Developer Experience](#developer-experience)
+- [🏃‍♂️ Getting Started](#️-getting-started)
+- [🗺️ Application Routes](#️-application-routes)
+- [🌐 API Integration](#-api-integration)
+- [📱 Responsive Design](#-responsive-design)
+- [🎨 Design System](#-design-system)
+- [🧪 Testing Strategy](#-testing-strategy)
+- [🔒 Authentication Flow](#-authentication-flow)
+- [🔒 Security Considerations](#-security-considerations)
+- [📝 Development Guidelines](#-development-guidelines)
+- [🤝 Contributing](#-contributing)
+
+## 📋 Overview
+
+Health-App is a modern, full-featured web application designed to help users monitor and track their health journey. The application provides an intuitive interface for managing daily health metrics, meal records, and personal achievements, making it easier for users to maintain healthy habits and visualize their progress over time.
+
+### What It Does
+
+The application serves as a comprehensive health dashboard where users can:
+
+- **Track Health Metrics:** Monitor weight and body fat percentage over time with interactive charts and customizable time periods (daily, weekly, monthly, yearly views)
+- **Record Meals:** Document and organize meals with photos, categorized by type (Breakfast, Lunch, Dinner, Snack) with infinite scrolling for easy browsing
+- **View Achievements:** Track daily progress with visual indicators showing achievement rates and motivational insights
+- **Stay Informed:** Receive notifications and updates through an integrated notification system
+- **Manage Account:** Secure authentication with password-based login and session management
+
+### Key Highlights
+
+- **🎯 User-Centric Design:** Clean, modern interface optimized for both desktop and mobile devices with responsive layouts
+- **📊 Data Visualization:** Interactive charts powered by Recharts provide clear insights into health trends
+- **⚡ Performance Optimized:** Leverages React Query for efficient data caching, background updates, and optimistic UI updates
+- **🔒 Secure:** JWT-based authentication with protected routes and automatic token management
+- **♿ Accessible:** WCAG AA compliant with keyboard navigation and screen reader support
+- **🧪 Well-Tested:** Comprehensive test coverage (80%+) ensuring reliability and maintainability
+
+### Target Users
+
+This application is ideal for:
+
+- Individuals looking to maintain a healthy lifestyle with structured tracking
+- Health-conscious users who want to monitor their progress visually
+- Anyone seeking an intuitive, mobile-friendly health tracking solution
+
+### Technical Excellence
+
+Built with modern web technologies and best practices, Health-App demonstrates:
+
+- Type-safe development with TypeScript and auto-generated API types
+- Robust state management using React Query and Context API
+- Component-driven architecture with reusable, testable components
+- Automated API integration with OpenAPI schema and Orval code generation
+- Comprehensive testing strategy with unit, integration, and API mocking
+
 ## 🚀 Technology Stack
 
-- **Framework:** React with TypeScript
-- **Build Tool:** Vite
-- **Data Fetching:** React Query (TanStack Query)
-- **Styling:** styled-components
-- **Testing:** Vitest (80%+ coverage target)
-- **State Management:** React Query + React Context (if needed)
-- **API Integration:** REST API with OpenAPI schema
+- **Framework:** React 19 with TypeScript
+- **Routing:** React Router v7
+- **Build Tool:** Vite (with Rolldown)
+- **Data Fetching:** React Query (TanStack Query v5)
+- **Form Management:** React Hook Form with Zod validation
+- **Styling:** styled-components v6
+- **Charts:** Recharts v3
+- **Testing:** Vitest with React Testing Library (80%+ coverage target)
+- **State Management:** React Query + React Context (AuthContext)
+- **API Integration:**
+  - REST API with OpenAPI schema
+  - Orval for type generation
+  - Axios for HTTP client
+  - MSW for API mocking in tests
 - **Code Quality:**
   - ESLint for linting
   - Prettier for code formatting
@@ -23,56 +92,125 @@ health-app/
 ├── src/
 │   ├── api/                    # API layer (see /src/api/README.md)
 │   │   ├── client.ts           # Axios client with auth interceptor
-│   │   ├── schemas/            # OpenAPI schema
-│   │   └── generated/          # Auto-generated types & hooks
+│   │   ├── schemas/            # OpenAPI schema (api.swagger.json)
+│   │   ├── generated/          # Auto-generated by Orval
+│   │   │   ├── default/        # React Query hooks & MSW handlers
+│   │   │   └── schemas/        # Zod schemas & TypeScript types
+│   │   ├── index.ts            # API exports
+│   │   └── README.md           # API documentation
 │   │
 │   ├── assets/                 # Static assets
-│   │   ├── icons/              # SVG icons
-│   │   └── images/             # Images
+│   │   └── icons/              # SVG icons (15 icon files)
 │   │
 │   ├── components/             # Reusable components
 │   │   ├── common/             # Generic shared components
-│   │   ├── layout/             # Layout components (Header, Footer, Layout)
-│   │   └── features/           # Feature-specific components
+│   │   │   └── ScrollToTop/    # Scroll to top button
+│   │   └── layout/             # Layout components
+│   │       ├── Header/         # Header with navigation & auth
+│   │       ├── Footer/         # Footer with links
+│   │       └── Layout/         # Main layout wrapper
 │   │
-│   ├── contexts/               # React contexts (Auth, etc.)
+│   ├── contexts/               # React contexts
+│   │   └── AuthContext/        # Authentication context & provider
+│   │
 │   ├── constants/              # Application constants
-│   ├── data/                   # Static data (menu items, etc.)
+│   │   └── myPage.ts           # MyPage-specific constants
+│   │
+│   ├── data/                   # Static data
+│   │   ├── headerMenuItems.ts  # Header navigation items
+│   │   ├── footerMenuItems.ts  # Footer navigation items
+│   │   └── durationOptions.ts  # Health record duration options
 │   │
 │   ├── hooks/                  # Custom React Query hooks
-│   │   ├── useAuthMutation.ts
-│   │   ├── useAchievement.ts
-│   │   ├── useHealthRecords.ts
-│   │   └── useMealRecords.ts
+│   │   ├── useAuthMutation.ts  # Login mutation
+│   │   ├── useTokenValidation.ts # Token validation
+│   │   ├── useAchievement.ts   # Achievement data
+│   │   ├── useHealthRecords.ts # Health records with duration filter
+│   │   ├── useMealRecords.ts   # Meal records with infinite scroll
+│   │   ├── useNotifications.ts # Notification data
+│   │   └── useAppNavigate.ts   # Navigation helper
 │   │
 │   ├── pages/                  # Page components
 │   │   ├── TopPage/            # Login page (/)
+│   │   │   ├── index.tsx
+│   │   │   ├── index.styles.ts
+│   │   │   ├── index.test.tsx
+│   │   │   └── schema.ts       # Zod validation schema
 │   │   ├── MyPage/             # Dashboard (/myPage)
+│   │   │   ├── index.tsx
+│   │   │   ├── index.styles.ts
+│   │   │   ├── index.test.tsx
+│   │   │   └── components/     # Page-specific components
+│   │   │       ├── AchievementSection/
+│   │   │       ├── HealthRecordSection/
+│   │   │       └── MealRecordsSection/
 │   │   ├── AuthFailedPage/     # Auth error (/authenticationError)
 │   │   └── NotFoundPage/       # 404 page
 │   │
 │   ├── routes/                 # Routing configuration
-│   ├── styles/                 # Global styles, theme system
-│   ├── types/                  # TypeScript type definitions
-│   └── utils/                  # Utility functions & test helpers
+│   │   ├── index.tsx           # Router setup
+│   │   └── path.ts             # Route paths
+│   │
+│   ├── styles/                 # Global styles & theme system
+│   │   ├── GlobalStyles.tsx    # Global CSS styles
+│   │   ├── theme.ts            # Theme configuration
+│   │   └── styled.d.ts         # styled-components type definitions
+│   │
+│   └── utils/                  # Utility functions
+│       ├── pxToRem.ts          # Pixel to rem converter
+│       └── test/               # Test utilities
+│           ├── test-utils.tsx  # Custom render with providers
+│           ├── mockData.ts     # Mock data generators
+│           ├── server.ts       # MSW server setup
+│           └── index.ts        # Test exports
 ```
 
-> **Note:** Each component folder contains `index.tsx`, `index.styles.ts`, and `index.test.tsx` following a consistent structure.
+> **Note:** Each component and page folder follows a consistent structure with `index.tsx`, `index.styles.ts`, and `index.test.tsx` files.
 
 ## 🔑 Key Features
 
-- User authentication with password protection
-- Health metrics tracking and visualization
-- Meal record management with infinite scrolling
-- Responsive design (415px - 1024px+)
-- Achievement tracking with visual indicators
-- Real-time notifications system
-- Accessibility-focused components
+### Authentication & Authorization
+
+- Password-based authentication with JWT tokens
+- Secure token storage and management
+- Protected routes with authentication checks
+- Auto-redirect on authentication status changes
+- Logout functionality with session cleanup
+
+### Dashboard (My Page)
+
+- **Achievement Section:** Circular progress indicator showing daily achievement rate with meal image background
+- **Health Records:** Interactive line chart with weight and body fat percentage tracking
+  - Filter by duration: Day, Week, Month, Year
+  - Smooth animations and responsive chart rendering
+  - Data caching for optimal performance
+- **Meal Records:** Infinite scrolling grid of meal entries
+  - Lazy loading with intersection observer
+  - Image optimization with lazy loading
+  - Categorized by meal type (Breakfast, Lunch, Dinner, Snack)
+
+### User Interface
+
+- Responsive design across all devices (mobile 415px, tablet 851px, desktop 1440px)
+- Smooth scroll-to-top button on all pages
+- Header with navigation and notifications badge
+- Fixed footer with important links
+- Loading states and skeleton screens
+- Error handling with retry functionality
+- Accessibility-focused (WCAG AA compliant)
+
+### Developer Experience
+
+- Type-safe API integration with auto-generated types
+- Form validation with React Hook Form and Zod
+- Comprehensive test coverage (80%+)
+- Hot module replacement for fast development
+- Consistent code formatting and linting
 
 ## 🏃‍♂️ Getting Started
 
 1. **Prerequisites**
-   - Node.js (v20 or higher)
+   - Node.js (v22 or higher)
    - pnpm (v8 or higher)
 
 2. **Installation**
@@ -92,36 +230,85 @@ health-app/
    # Start development server
    pnpm dev
 
-   # Run tests
-   pnpm test
+   # Build for production
+   pnpm build
 
-   # Run tests with coverage
-   pnpm test:coverage
+   # Preview production build
+   pnpm preview
 
-   # Lint code
-   pnpm lint
+   # Type checking
+   pnpm compile
 
-   # Format code
-   pnpm format
+   # Testing
+   pnpm test              # Run all tests once
+   pnpm test:watch        # Run tests in watch mode
+   pnpm test:ui           # Run tests with UI
+   pnpm test:coverage     # Run tests with coverage report
+
+   # Code Quality
+   pnpm lint              # Check for linting errors
+   pnpm lint:fix          # Fix linting errors automatically
+   pnpm format            # Format code with Prettier
+   pnpm format:check      # Check if code is formatted
+
+   # API Code Generation
+   pnpm generate:api      # Generate API types and hooks from OpenAPI schema
    ```
+
+## 🗺️ Application Routes
+
+| Route                    | Path                   | Description                    | Auth Required |
+| ------------------------ | ---------------------- | ------------------------------ | ------------- |
+| **Top Page**             | `/`                    | Login page with password input | No            |
+| **My Page**              | `/myPage`              | Dashboard with health metrics  | Yes           |
+| **Authentication Error** | `/authenticationError` | Displayed when auth fails      | No            |
+| **Not Found**            | `*` (catch-all)        | 404 page for invalid routes    | No            |
+
+### Route Behavior
+
+- **Unauthenticated users** on `/myPage` → Redirected to `/authenticationError`
+- **Authenticated users** on `/` → Redirected to `/myPage`
+- **Header** only shows on authenticated routes
+- **Footer** and **ScrollToTop** button visible on all routes
 
 ## 🌐 API Integration
 
 - **Base URL:** `https://health_app_api.dev-arent.workers.dev`
+- **OpenAPI Schema:** Available at `/openapi` endpoint
 - **Authentication:** Password-based with JWT Bearer token
-- **Data Fetching:** React Query with custom hooks
-- **Type Generation:** Orval (from OpenAPI schema)
-- **Testing:** MSW for API mocking
+- **Token Storage:** localStorage with automatic injection via Axios interceptor
+- **Data Fetching:** React Query v5 with custom hooks
+- **Type Generation:** Orval for TypeScript types, Zod schemas, and MSW handlers
+- **Error Handling:** Automatic 401 handling with redirect to auth error page
 
-> **📚 Full API Documentation:** See [`/src/api/README.md`](./src/api/README.md) for complete integration guide, available hooks, and usage examples.
+### Available API Hooks
+
+| Hook                         | Endpoint                    | Purpose                               |
+| ---------------------------- | --------------------------- | ------------------------------------- |
+| `useAuthMutation()`          | `POST /signUp`              | Login and store JWT token             |
+| `useTokenValidation()`       | `GET /validateToken`        | Validate current JWT token            |
+| `useAchievement()`           | `GET /myData/achievement`   | Get today's achievement percentage    |
+| `useNotifications()`         | `GET /myData/notification`  | Get notifications with pagination     |
+| `useMealRecords()`           | `GET /myData/record/meals`  | Get meal records with infinite scroll |
+| `useHealthRecords(duration)` | `GET /myData/record/health` | Get health records by duration        |
+
+> **📚 Full API Documentation:** See [`/src/api/README.md`](./src/api/README.md) for complete integration guide, request/response examples, and testing strategies.
 
 ## 📱 Responsive Design
 
-- Mobile: 415px minimum
-- Desktop: 1024px maximum
-- Flexible breakpoints for optimal UX
-- No horizontal scrolling
-- Touch-friendly interface
+### Breakpoints (defined in `src/styles/theme.ts`)
+
+- **Mobile:** `415px` - Minimum viewport width
+- **Tablet:** `851px` - Intermediate breakpoint
+- **Desktop:** `1440px` - Maximum content width
+
+### Design Principles
+
+- Flexible layouts that adapt smoothly between breakpoints
+- No horizontal scrolling at any viewport size
+- Touch-friendly interface with minimum 44px touch targets
+- Elements remain within viewport without overflow
+- Images and content scale appropriately
 
 ## 🎨 Design System
 
@@ -182,27 +369,76 @@ const JapaneseText = styled.p`
 
 ## 🧪 Testing Strategy
 
-- Unit tests for utilities and hooks
-- Component tests with React Testing Library
-- Integration tests for pages
-- 80%+ code coverage requirement
+### Test Types
 
-## 📦 Build and Deployment
+- **Unit Tests:** Utilities, hooks, and isolated functions
+- **Component Tests:** Individual components with React Testing Library
+- **Integration Tests:** Full page flows and user interactions
+- **API Mocking:** MSW (Mock Service Worker) for realistic API testing
+
+### Testing Tools
+
+- **Framework:** Vitest v3 with jsdom environment
+- **Library:** React Testing Library v16
+- **User Interactions:** @testing-library/user-event (always prefer over fireEvent)
+- **Matchers:** @testing-library/jest-dom
+- **Coverage:** @vitest/coverage-v8
+- **API Mocking:** MSW v2 with auto-generated handlers
+
+### Coverage Requirements
+
+- **Minimum:** 80% coverage across all metrics
+- **Metrics:** Lines, Functions, Branches, and Statements
+- **Reports:** HTML coverage reports generated in `/coverage` directory
+
+### Running Tests
 
 ```bash
-# Build for production
-pnpm build
-
-# Preview production build
-pnpm preview
+pnpm test              # Run all tests once
+pnpm test:watch        # Interactive watch mode
+pnpm test:ui           # Visual test UI interface
+pnpm test:coverage     # Generate coverage report
 ```
+
+## 🔒 Authentication Flow
+
+### Login Process
+
+1. **User visits Top Page (`/`)** → Login form displayed
+2. **User enters password** → Form validation with Zod schema
+3. **Submit form** → `useAuthMutation()` calls `POST /signUp`
+4. **API returns JWT token** → Token stored in localStorage
+5. **Axios interceptor** → Automatically adds `Authorization: Bearer {token}` to all requests
+6. **Redirect to `/myPage`** → Dashboard loads with user data
+
+### Protected Routes
+
+- Routes check authentication status using `useAuth()` hook from `AuthContext`
+- Unauthenticated users accessing protected routes → Redirect to `/authenticationError`
+- Authentication state persists across page refreshes via localStorage
+
+### Token Management
+
+- **Storage:** localStorage with key `authToken`
+- **Injection:** Axios request interceptor adds token to all API calls
+- **Validation:** Token validated on mount and protected route access
+- **Expiration:** 401 responses clear token and redirect to auth error page
+- **Logout:** Clears token from localStorage and redirects to `/`
+
+### Test Credentials
+
+- **Correct Password:** `"password"` → Returns valid JWT token
+- **Any other password** → Returns 401 error
 
 ## 🔒 Security Considerations
 
-- Secure authentication flow
-- Protected routes
-- API token management
-- Input validation and sanitization
+- JWT token-based authentication
+- Automatic token injection via interceptors
+- Protected routes with authentication guards
+- Input validation with Zod schemas
+- Secure token storage in localStorage
+- Automatic cleanup on logout
+- 401 error handling with auto-redirect
 
 ## 📝 Development Guidelines
 

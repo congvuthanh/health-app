@@ -9,12 +9,20 @@ alwaysApply: false
 
 The Layout component serves as the main structural wrapper for all pages in the Health App, providing consistent header and footer positioning with dynamic content area.
 
+**Key Behavior:** The Header component is conditionally rendered based on authentication status. This ensures that:
+
+- The Top Page (login page) displays without the header, providing a clean login experience
+- Authenticated pages (MyPage, etc.) display with the full navigation header
+- The Footer and ScrollToTop button are always visible on all pages
+
 ## Technical Requirements
 
 ### Component Structure
 
 - Must use React Router's `Outlet` component for dynamic content rendering
 - Must include `Header` and `Footer` components from respective directories
+- Must include `ScrollToTop` component from common components directory
+- Must use `useAuth()` hook from `src/contexts/AuthContext` to check authentication status
 - Must be implemented using styled-components with theme system
 
 ### Layout Behavior
@@ -24,18 +32,29 @@ The Layout component serves as the main structural wrapper for all pages in the 
    - Z-index: Should be above main content
    - Should remain visible during page scroll
    - Height: According to Header component specs
+   - **Conditional Rendering:** Only displayed when user is authenticated (`isAuthenticated === true`)
+   - Uses `useAuth()` hook from `src/contexts/AuthContext` to check authentication status
+   - This ensures the header (with navigation and logout) only appears on authenticated pages
 
 2. Footer Requirements:
    - Position: Fixed at the bottom of the viewport
    - Z-index: Should be above main content
    - Should remain visible during page scroll
    - Height: According to Footer component specs
+   - Always visible regardless of authentication status
 
 3. Main Content Area (Outlet):
    - Should occupy remaining viewport height between header and footer
    - Must have appropriate padding to prevent content overlap with fixed header/footer
    - Should be scrollable when content exceeds viewport height
    - Must maintain full width of viewport minus any padding/margins
+
+4. ScrollToTop Button:
+   - Included in Layout component via `<ScrollToTop />` from `src/components/common/ScrollToTop`
+   - Fixed position button for scrolling back to top of page
+   - Always visible on all pages
+   - See ScrollToTop component specs (`components/common/scroll-to-top-button/scroll-to-top-button.mdc`) for detailed requirements
+   - Positioned at bottom-right corner of viewport
 
 ### Styling Requirements
 
@@ -82,19 +101,58 @@ src/components/layout/Layout/
 - Test component rendering
 - Test proper content display through Outlet
 - Test header and footer positioning
+- **Test conditional header rendering:**
+  - Header should render when user is authenticated
+  - Header should NOT render when user is not authenticated
+- Test ScrollToTop component rendering
+- Test footer always renders regardless of authentication
 - Test responsive behavior
 - Minimum 80% test coverage
 
 ## Example Usage
 
 ```tsx
-// Example of how the Layout component should be used
-<Layout>{/* Page content will be rendered here via Outlet */}</Layout>
+// Example implementation of the Layout component
+import { ScrollToTop } from 'components/common/ScrollToTop';
+import { useAuth } from 'contexts/AuthContext';
+import React from 'react';
+import { Outlet } from 'react-router';
+import Footer from '../Footer';
+import Header from '../Header';
+import { LayoutContainer, MainContent } from './index.styles';
+
+export const Layout: React.FC = () => {
+  const { isAuthenticated } = useAuth();
+
+  return (
+    <LayoutContainer>
+      {isAuthenticated && <Header />}
+      <MainContent role="main">
+        <Outlet />
+      </MainContent>
+      <ScrollToTop />
+      <Footer />
+    </LayoutContainer>
+  );
+};
+```
+
+**Usage in routing:**
+
+```tsx
+// In routes configuration
+<Route path="/" element={<Layout />}>
+  <Route index element={<TopPage />} />
+  <Route path="/myPage" element={<MyPage />} />
+  {/* Other routes... */}
+</Route>
 ```
 
 ## Dependencies
 
 - react-router-dom (for Outlet)
 - styled-components (for styling)
-- Header component
-- Footer component
+- Header component (`src/components/layout/Header`)
+- Footer component (`src/components/layout/Footer`)
+- ScrollToTop component (`src/components/common/ScrollToTop`)
+- useAuth hook (`src/contexts/AuthContext`)
