@@ -39,6 +39,13 @@ health-app/
 │   │   │   │   └── index.test.tsx
 │   │   └── features/                   # Feature-specific components
 │   │
+│   ├── constants/                      # Application constants
+│   │   ├── routes.ts                   # Route paths
+│   │   └── config.ts                    # App configuration
+│   │
+│   ├── data/                           # Static data
+│   │   └── headerMenuItems.ts                # Header menus
+│   │
 │   ├── hooks/                          # Custom hooks
 │   │   ├── useAuth.ts
 │   │   ├── useAchievement.ts

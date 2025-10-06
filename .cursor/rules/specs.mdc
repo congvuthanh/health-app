@@ -33,6 +33,9 @@ _The web application "Health-App"_
   │   │       ├── index.styles.ts (optional)
   │   │       └── index.test.tsx
   │   └── features/         # Feature-specific components
+  ├── constants/            # Application constants (routes, config)
+  ├── data/                 # Static data (menu items, seed data, JSON files)
+  │   └── headerMenuItems.ts
   ├── hooks/                # Custom hooks (useAuth, useAchievement, etc.)
   ├── pages/                # Page components
   │   └── [PageName]/
