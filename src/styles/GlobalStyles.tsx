@@ -36,6 +36,11 @@ const GlobalStyles = createGlobalStyle`
     min-height: 100dvh; /* Modern browsers */
     font-size: 1.6rem;
   }
+
+  #root {
+    flex-grow: 1;
+    width: 100%;
+  }
 `;
 
 export default GlobalStyles;

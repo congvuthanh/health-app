@@ -179,7 +179,7 @@ export const theme: DefaultTheme = {
   },
   breakpoints: {
     mobile: '415px',
-    tablet: '1024px',
+    tablet: '851px',
     desktop: '1440px',
   },
 };
