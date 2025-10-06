@@ -53,7 +53,6 @@ export const primaryNavItems: NavigationItem[] = [
     label: 'お知らせ',
     icon: icInfo,
     link: '#',
-    badge: 1, // TODO: This should be fetched from API or state management
   },
 ];
 

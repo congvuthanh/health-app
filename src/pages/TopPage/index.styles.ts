@@ -52,7 +52,7 @@ export const LoginForm = styled.form`
 `;
 
 export const FormGroup = styled.div`
-  width: 24rem;
+  flex-grow: 1;
   display: flex;
   flex-direction: column;
   gap: 0.8rem;
@@ -110,6 +110,7 @@ export const SubmitButton = styled.button`
   border: none;
   border-radius: 0.4rem;
   cursor: pointer;
+  white-space: nowrap;
   transition:
     opacity 0.2s ease,
     background-color 0.2s ease;

@@ -1,10 +1,13 @@
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 
+// Base URL for API
+const API_BASE_URL = import.meta.env.VITE_API_URL;
+
 // Define MSW handlers for API endpoints
 const handlers = [
   // Authentication endpoint
-  http.post('/signUp', () => {
+  http.post(`${API_BASE_URL}/signUp`, () => {
     return HttpResponse.json({
       accessToken: 'mock-jwt-token',
       tokenType: 'Bearer',
@@ -13,7 +16,7 @@ const handlers = [
   }),
 
   // Token validation endpoint
-  http.get('/validateToken', () => {
+  http.get(`${API_BASE_URL}/validateToken`, () => {
     return HttpResponse.json({
       isAuthenticated: true,
       tokenInfo: {
@@ -24,7 +27,7 @@ const handlers = [
   }),
 
   // Achievement endpoint
-  http.get('/myData/achievement', () => {
+  http.get(`${API_BASE_URL}/myData/achievement`, () => {
     return HttpResponse.json({
       date: new Date().toISOString(),
       imageUrl: 'https://placehold.jp/400x300.png',
@@ -34,29 +37,34 @@ const handlers = [
   }),
 
   // Notifications endpoint
-  http.get('/myData/notification', () => {
+  http.get(`${API_BASE_URL}/myData/notification`, () => {
     return HttpResponse.json({
-      items: [
-        {
-          id: 'notif-1',
-          title: 'Test Notification',
-          message: 'This is a test notification',
-          createdAt: new Date().toISOString(),
-          isRead: false,
+      status: 'ok',
+      code: 200,
+      message: 'Fetched successfully',
+      data: {
+        items: [
+          {
+            id: 'notif-1',
+            title: 'Test Notification',
+            message: 'This is a test notification',
+            createdAt: new Date().toISOString(),
+            isRead: false,
+          },
+        ],
+        pageInfo: {
+          hasNextPage: false,
+          hasPreviousPage: false,
+          limit: 10,
         },
-      ],
-      pageInfo: {
-        hasNextPage: false,
-        hasPreviousPage: false,
-        limit: 10,
+        totalCount: 1,
+        unreadNotificationCount: 1,
       },
-      totalCount: 1,
-      unreadNotificationCount: 1,
     });
   }),
 
   // Meal records endpoint
-  http.get('/myData/record/meals', () => {
+  http.get(`${API_BASE_URL}/myData/record/meals`, () => {
     return HttpResponse.json({
       items: [
         {
@@ -77,7 +85,7 @@ const handlers = [
   }),
 
   // Health records endpoint
-  http.get('/myData/record/health', () => {
+  http.get(`${API_BASE_URL}/myData/record/health`, () => {
     return HttpResponse.json({
       duration: 'year',
       items: [

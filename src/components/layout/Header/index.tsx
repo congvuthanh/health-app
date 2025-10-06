@@ -11,6 +11,7 @@ import { dropdownMenuItems, primaryNavItems } from 'data/headerMenuItems';
 // Hooks
 import { useAuth } from 'contexts/AuthContext';
 import { useAppNavigate } from 'hooks/useAppNavigate';
+import { useNotifications } from 'hooks/useNotifications';
 
 // Styled Components
 import {
@@ -37,6 +38,9 @@ export const Header: React.FC = () => {
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const navigate = useAppNavigate();
   const { logout } = useAuth();
+
+  // Fetch notification count
+  const { data: notificationData } = useNotifications({ limit: 1 });
 
   // Handle logout
   const handleLogout = () => {
@@ -93,15 +97,25 @@ export const Header: React.FC = () => {
       <RightSection>
         {/* Primary Navigation */}
         <PrimaryNav>
-          {primaryNavItems.map((item) => (
-            <NavItem key={item.id} to={item.link}>
-              <NavIconWrapper>
-                <NavIcon src={item.icon} />
-                {item.badge && <Badge>{item.badge}</Badge>}
-              </NavIconWrapper>
-              <span>{item.label}</span>
-            </NavItem>
-          ))}
+          {primaryNavItems.map((item) => {
+            // Get unread count for notifications
+            const badgeCount =
+              item.id === 'notifications'
+                ? notificationData?.data?.unreadNotificationCount
+                : item.badge;
+
+            return (
+              <NavItem key={item.id} to={item.link}>
+                <NavIconWrapper>
+                  <NavIcon src={item.icon} />
+                  {badgeCount !== undefined && badgeCount > 0 && (
+                    <Badge>{badgeCount}</Badge>
+                  )}
+                </NavIconWrapper>
+                <span>{item.label}</span>
+              </NavItem>
+            );
+          })}
         </PrimaryNav>
 
         {/* Hamburger Menu Button */}

@@ -1,5 +1,5 @@
 import { fireEvent, waitFor } from '@testing-library/react';
-import { dropdownMenuItems, primaryNavItems } from 'data/headerMenuItems';
+import { dropdownMenuItems } from 'data/headerMenuItems';
 import { renderWithProviders, screen } from 'utils/test';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { Header } from './index';
@@ -40,14 +40,15 @@ describe('Header Component', () => {
       expect(screen.getByText('お知らせ')).toBeInTheDocument();
     });
 
-    it('should render notification badge with count', () => {
+    it('should render notification badge with count from API', async () => {
       renderWithProviders(<Header />);
-      // Find the notification item with badge from data
-      const notificationItem = primaryNavItems.find((item) => item.badge);
-      if (notificationItem?.badge) {
-        const badge = screen.getByText(notificationItem.badge.toString());
+
+      // Wait for notification data to be fetched and badge to appear
+      await waitFor(() => {
+        // The mock notification API returns unreadNotificationCount: 1
+        const badge = screen.queryByText('1');
         expect(badge).toBeInTheDocument();
-      }
+      });
     });
 
     it('should render hamburger menu button', () => {
