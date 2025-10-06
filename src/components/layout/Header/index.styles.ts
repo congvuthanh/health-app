@@ -3,10 +3,8 @@ import { Link } from 'react-router';
 import styled, { css } from 'styled-components';
 
 export const HeaderContainer = styled.header`
-  position: fixed;
+  position: sticky;
   top: 0;
-  left: 0;
-  right: 0;
   height: 6.4rem;
   background: ${({ theme }) => theme.colors.black[500]};
   padding: 0 2.4rem;
