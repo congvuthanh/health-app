@@ -1,14 +1,17 @@
 ---
+globs: src/pages/AuthFailedPage/index.tsx
 alwaysApply: false
 ---
 
-*Authentication failure page*
+_Authentication failure page_
 
 **Functional-Requirements**
+
 - Displayed when the user is not authenticated or when API requests fail due to authentication errors
 - Implemented as a separate error page with a dedicated route (e.g., /auth-error)
 - Should provide a way for users to return to the login page
 
 **Design-Requirements**
+
 - Has a main text "ログインが必要です"
 - Has a description text "ログインページはこちら" where "こちら" is a link. When clicked, it redirects to the login page (top page).
