@@ -22,13 +22,13 @@ export const useMealRecordsInfinite = (
   return useGetMyDataRecordMealsInfinite(params, {
     query: {
       getNextPageParam: (lastPage) => {
-        return lastPage.pageInfo.hasNextPage
-          ? lastPage.pageInfo.endCursor
+        return lastPage.data.pageInfo.hasNextPage
+          ? lastPage.data.pageInfo.endCursor
           : undefined;
       },
       getPreviousPageParam: (firstPage) => {
-        return firstPage.pageInfo.hasPreviousPage
-          ? firstPage.pageInfo.startCursor
+        return firstPage.data.pageInfo.hasPreviousPage
+          ? firstPage.data.pageInfo.startCursor
           : undefined;
       },
     },

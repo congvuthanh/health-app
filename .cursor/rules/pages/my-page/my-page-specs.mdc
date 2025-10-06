@@ -1,65 +1,764 @@
 ---
+globs: src/pages/MyPage/index.tsx
 alwaysApply: false
 ---
 
-*My Page*
+# My Page
 
-**Functional-Requirements**
-- Routing path must be「/myPage」
-- If the user is not authenticated or authentication has failed, the screen will be displayed as "Authentication failure display” (defined in ./authenticate-failed-page-specs.mdc)
+## Component Architecture
 
-**Header**
-- The number of unread notifications should be displayed as a badge in the 「お知らせ(notification)」 section of the menu.
-- If the number of unread notifications is 0, the badge should not be displayed.
-- Each menu item should be implemented as a link and href="#" should be set.
+**IMPORTANT: What NOT to implement in this page component**
 
-**Dropdown Menu「≡」**
-- Clicking the trigger「≡」 will display the menu
-- While the Menu is being displayed, switch the trigger to the「x」icon.
-- While the Menu is displayed, the Menu must be closed by the following operations
-  - Press the “esc” key.
-  - Click on the「x」icon.
-  - Click outside the menu.
-- When「ログアウト(logout)」is clicked, the logout process shall be executed and the user shall be redirected to the top page.
-- Other menu items should be implemented as links and href="#" should be set
+- ❌ Header component - already exists in `src/components/layout/Header`
+- ❌ Footer component - already exists in `src/components/layout/Footer`
+- ❌ Scroll to Top button - already exists in `src/components/layout/Layout`
+- ❌ Authentication logic - handled by `AuthContext` and route protection
 
-**「本日の達成率(achievement)」 in the upper left corner**
-- Fetch 「本日の達成率(achievement)」 data from API and display the following:
-  - Date of data registration
-  - Image of the meal
-  - Achievement rate
-  - Circular indicator according to the achievement rate
+**What TO implement in this page component**
 
-**「体重・体脂肪率の記録(health-record)」in the upper right corner**
-- Retrieve「体重・体脂肪率(health-record)」 data from the API and display the line graph with the most recent date at the far right.
-- Clicking the "Day," "Week," "Month," or "Year" button will change the display range and display a graph that corresponds to that range.
-  - Each data can be retrieved by setting the time period as a request parameter to the API.
-- The initial value of the filter should be "Year".
-- The data retrieved by each filter should be kept in the cache of the front-end and displayed from the cache for the second and subsequent requests.
+- ✅ Achievement section with circular progress indicator
+- ✅ Health record section with line chart and filter buttons
+- ✅ Meal records section with infinite scroll grid
 
-**「食事の記録(meal-record)」 at the bottom of the page**
-- Retrieve 「食事の記録(meal-record)」 data from the API and display them in order of newest to oldest from the top left (default is 8 items)
-- When the user scrolls near the bottom of the 「食事の記録(meal-record)」list, additional content is automatically loaded (infinite scrolling)
-- All「食事の記録(meal-record)」data should be retrieved, and paging requests should not be invoked when there is no more data to be retrieved additionally.
+**Expected File Structure:**
 
-**「スクロール(scroll)」Button in the bottom right**
-- Fixed display at the bottom right of the screen, and click to scroll to the top of the screen
-- If the entire screen cannot be scrolled, it should not be displayed.
+```
+src/pages/MyPage/
+├── index.tsx              # Main page component
+├── index.styles.ts        # Styled components
+├── index.test.tsx         # Unit and integration tests
+└── components/            # Page-specific components
+    ├── AchievementSection/
+    │   ├── index.tsx
+    │   ├── index.styles.ts
+    │   └── index.test.tsx
+    ├── HealthRecordSection/
+    │   ├── index.tsx
+    │   ├── index.styles.ts
+    │   └── index.test.tsx
+    └── MealRecordsSection/
+        ├── index.tsx
+        ├── index.styles.ts
+        └── index.test.tsx
+```
 
+## Functional Requirements
 
-**Design-Requirements**
-- The header, 「食事の記録(meal-record)」, and footer should have a common maximum width, and if the device width is large, there should be margins on the left and right sides.
-- 「栄養達成率(achievement)」and「体重・体脂肪グラフ(health-record)」 should be displayed at the same height and fill the entire width of the screen.
-- The color of the line in the 「体重・体脂肪グラフ(health-record)」 should be yellow for weight and blue for body fat percentage.
-- Clickable elements should be visually obvious when hovering.
-- Consider the accessibility of each element.
+**Routing & Authentication:**
 
+- Routing path must be `/myPage`
+- If the user is not authenticated or authentication has failed, the screen will be displayed as "Authentication failure display" (defined in ./authenticate-failed-page-specs.mdc)
+- Use the existing `useAuth()` hook from `src/contexts/AuthContext` to check authentication status
 
-**Abnormal-System-Handling**
-- During API data loading, the loading status should be indicated by text or UI.
-- When data acquisition fails, an error message is displayed by text or UI.
-- Regarding abnormality response, the design is not important as long as the content can be determined.
+## Achievement Section「本日の達成率」
 
+**Component:** `AchievementSection` (create in `src/pages/MyPage/components/AchievementSection/`)
 
-**Supplements about API**
-- In case of discrepancies between the API data and the design mockup/specifications, the API data takes priority.
+**API Integration:**
+
+- Use hook: `useAchievement()` from `src/hooks/useAchievement.ts`
+- API endpoint: `GET /my-data/achievement`
+- Expected response schema: `GetMyDataAchievement200` (Zod schema in `src/api/generated/schemas/`)
+- Data structure:
+  ```typescript
+  {
+    data: {
+      date: string; // ISO date format, display as MM/DD
+      imageUrl: string; // Meal image URL
+      percentage: number; // Achievement percentage (0-100)
+    }
+  }
+  ```
+
+**Layout & Positioning:**
+
+- **Desktop:** Position in the upper left corner (50% viewport width, side-by-side with health record graph)
+- **Mobile:** Full viewport width at the top of the page
+- Both layouts: Full-bleed edge-to-edge (no container padding)
+
+**Visual Design:**
+
+- **Background:**
+  - Use meal image from API (`imageUrl`) as background
+  - Apply dark overlay (rgba(0, 0, 0, 0.3-0.5)) for text readability
+  - Use `background-size: cover` and `background-position: center`
+- **Circular Progress Indicator:**
+  - Position: Centered horizontally and vertically on the image
+  - Size: Approximately 18rem - 20rem diameter
+  - Style: White stroke (`theme.colors.white`) with 0.3rem - 0.5rem width
+  - Progress: Arc from 0° to (percentage \* 3.6)° (clockwise from top)
+  - Implementation: Use SVG `<circle>` with `stroke-dasharray` and `stroke-dashoffset`
+  - Background circle: Subtle white outline or semi-transparent white circle
+  - Shadow: have shadow similar `text-shadow: 0 0 6px #FC7400;`
+- **Date Display:**
+  - Position: Top of circular indicator (inside or just above)
+  - Format: `MM/DD` (e.g., "05/21")
+  - Color: White (`theme.colors.white`)
+  - Text shadow: `text-shadow: 0 0 6px #FC7400;`
+  - Typography: Use `theme.fonts.alphanumeric` with medium size
+- **Percentage Display:**
+  - Position: Center of circular indicator
+  - Format: `XX%` (e.g., "75%")
+  - Color: White (`theme.colors.white`)
+  - Text shadow: `text-shadow: 0 0 6px #FC7400;`
+  - Typography: Large bold text (`theme.typography.h1` or larger)
+  - Font: Use `theme.fonts.alphanumeric`
+
+**Minimum Height:**
+
+- Desktop: Match height with HealthRecordSection (approximately 30rem - 35rem)
+- Mobile: Minimum 30rem to ensure proper visibility
+
+## Health Record Section「体重・体脂肪率の記録」
+
+**Component:** `HealthRecordSection` (create in `src/pages/MyPage/components/HealthRecordSection/`)
+
+**API Integration:**
+
+- Use hook: `useHealthRecords(duration)` from `src/hooks/useHealthRecords.ts`
+- API endpoint: `GET /my-data/record/health?duration={duration}`
+- URL parameters:
+  - `duration`: "day" | "week" | "month" | "year"
+- Expected response schema: `GetMyDataRecordHealth200` (Zod schema in `src/api/generated/schemas/`)
+- Data structure:
+  ```typescript
+  {
+    data: {
+      duration: 'day' | 'week' | 'month' | 'year';
+      items: Array<{
+        date: string; // ISO date format
+        weight: number; // Body weight in kg
+        bodyFat: number; // Body fat percentage
+      }>;
+    }
+  }
+  ```
+
+**Layout & Positioning:**
+
+- **Desktop:** Position in the upper right corner (50% viewport width, side-by-side with achievement section)
+- **Mobile:** Full viewport width below the achievement section
+- Both layouts: Full-bleed edge-to-edge (no container padding)
+
+**Graph Implementation:**
+
+- **Recommended library:** `recharts` or `chart.js` for React
+- **Alternative:** Implement custom SVG-based line chart
+- **Data ordering:** Display with most recent date at the far right (chronological left-to-right)
+
+**Graph Visual Design:**
+
+- **Container:**
+  - Background: Light gray (`#777777` or similar neutral gray)
+  - Padding: 2rem on all sides for labels and buttons
+- **Grid lines:**
+  - Vertical white lines for time intervals
+  - Line color: White (`theme.colors.white`)
+  - Line width: 0.1rem (1px)
+  - No horizontal grid lines
+- **X-axis:**
+  - Labels: Show time periods below the graph
+  - Format depends on duration filter:
+    - Year: `6月`, `7月`, `8月`, etc. (Japanese month format)
+    - Month: Day numbers (1, 2, 3, ...)
+    - Week: Day abbreviations or dates
+    - Day: Hour markers (0時, 6時, 12時, ...)
+  - Color: White (`theme.colors.white`)
+  - Typography: `theme.typography.p7.regular` (font-size: 0.8rem, font-weight: 400)
+  - Note: If design requires lighter weight (300), override with `font-weight: 300` after applying typography
+- **Y-axis:**
+  - No visible axis line
+  - No labels or tick marks
+  - Graph scales automatically based on data range
+- **Line Charts (two overlaid):**
+  - **Body Weight line:**
+    - Color: `theme.colors.primary[300]`
+    - Line width: 0.3rem
+    - Data points: Circular markers (0.8rem diameter)
+  - **Body Fat Percentage line:**
+    - Color: `theme.colors.secondary[300]`
+    - Line width: 0.3rem
+    - Data points: Circular markers (0.8rem diameter)
+  - Line style: Smooth curves (use cubic bezier or catmull-rom spline)
+  - Line cap: Round
+
+**Filter Buttons:**
+
+- **Position:** Bottom of the graph section, centered horizontally
+- **Spacing:** Above buttons: 1.5rem - 2rem margin from graph
+- **Four buttons:** 「日」(Day), 「週」(Week), 「月」(Month), 「年」(Year)
+- **Button styling:**
+  - Size: Equal width (approximately 5.6rem wide) and height (approximately 3.2rem tall)
+  - Spacing: 1.6rem gap between buttons
+  - Border radius: 1.1rem (fully rounded)
+  - Border: none
+  - **Default state:**
+    - Background: White (`theme.colors.white`)
+    - Text color: `theme.colors.black[400]`
+    - Typography: `theme.typography.p4`
+  - **Active state:**
+    - Background: `theme.colors.primary[400]`
+    - Text color: White (`theme.colors.white`)
+    - Border: None
+    - Typography:`theme.typography.p4`
+  - **Hover state:**
+    - Slight opacity change (0.8) or scale (1.02)
+- **Initial state:** 「年」(Year) button is active
+
+**State Management & Caching:**
+
+- Use React Query's cache for automatic caching (cache key: `['healthRecords', duration]`)
+- When switching filters:
+  1. Check if data exists in React Query cache
+  2. If cached, display immediately
+  3. If not cached, fetch from API with loading state
+- Smooth transition animation when switching between graphs (0.3s ease)
+
+**Minimum Height:**
+
+- Match height with AchievementSection (approximately 30rem - 35rem)
+
+## Meal Records Section「食事の記録」
+
+**Component:** `MealRecordsSection` (create in `src/pages/MyPage/components/MealRecordsSection/`)
+
+**API Integration:**
+
+- Use hook: `useMealRecords(limit, cursor)` from `src/hooks/useMealRecords.ts`
+- API endpoint: `GET /my-data/record/meals?limit={limit}&cursor={cursor}`
+- Use React Query's `useInfiniteQuery` for infinite scrolling
+- URL parameters:
+  - `limit`: Number of items per page (default: 8)
+  - `cursor`: Pagination cursor (optional, for loading more)
+- Expected response schema: `GetMyDataRecordMeals200` (Zod schema in `src/api/generated/schemas/`)
+- Data structure:
+  ```typescript
+  {
+    data: {
+      items: Array<{
+        id: string;
+        createdAt: string;  // ISO date format, display as YYYY.MM.DD
+        type: "Breakfast" | "Lunch" | "Dinner" | "Snack";
+        imageUrl: string;
+        altText: string;
+      }>;
+      pageInfo: {
+        hasNextPage: boolean;
+        endCursor?: string;
+      };
+      totalCount: number;
+    }
+  }
+  ```
+
+**Layout & Positioning:**
+
+- **Container:** Constrained to maximum width (use `theme.breakpoints.desktop` or `960px`)
+- **Centered:** Auto margins on left and right for large screens
+- **Section spacing:** 4rem - 6rem margin-top from health record section
+
+**Section Header:**
+
+- **Layout:** Flex container, centered (justify-content: center, align-items: center)
+- **Icon:**
+  - Use: `ic-memo.svg` from `src/assets/icons/`
+  - Position: Left of text
+  - Size: 3.2rem
+  - Color: Match text color
+- **Text:** 「食事の記録」
+  - Typography: `theme.typography.h5.regular`
+  - Color: `theme.colors.black[600]`
+  - Font: `theme.fonts.japanese`
+- **Spacing:**
+  - Margin-top: 4rem
+  - Margin-bottom: 2rem
+
+**Meal Grid Layout:**
+
+- **CSS Grid implementation:**
+  ```css
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(24rem, 1fr));
+  gap: 0.8rem;
+  ```
+- **Responsive columns:**
+  - Desktop (≥1024px): 4 columns
+  - Tablet (≥768px, <1024px): 3 columns
+  - Mobile (<768px): 2 columns
+- **Grid gap:** 0.8rem - 1.6rem (consistent spacing)
+
+**Individual Meal Card:**
+
+**Component:** Create reusable `MealCard` component
+
+**Card Container:**
+
+- Layout: Rectangular card
+- Border radius: 0.8rem
+- Aspect ratio: Square (1:1)
+- Overflow: Hidden (to clip image and maintain border radius)
+- Box shadow: no have
+- Position: Relative (for absolute overlay positioning)
+
+**Meal Image:**
+
+- Size: 100% width and height of card
+- Object-fit: Cover (fill space without distortion)
+- Object-position: Center
+- Loading: Use lazy loading (`loading="lazy"`)
+- Alt text: Use `altText` from API
+
+**Overlay Bar (bottom of card):**
+
+- Position: Absolute bottom of card
+- Width: 100% of card width
+- Background: `rgba(65, 65, 65, 0.7)` (semi-transparent dark overlay)
+- Padding: 0.4rem 0.8rem
+- Display: Flex with align-items: center
+- **Date:**
+  - Format: `YYYY.MM.DD` (e.g., "2025.05.21")
+  - Color: White (`theme.colors.white`)
+  - Typography: `theme.typography.p5.regular`
+  - Font: `theme.fonts.alphanumeric`
+  - Margin-right: 1rem
+- **Icon:**
+  - Use: use `ic-timer.svg` from assets
+  - Size: 1.8rem
+  - Color: White
+  - Margin-right: 0.4rem
+- **Meal Type:**
+  - Text: "Breakfast", "Lunch", "Dinner", or "Snack" (from API)
+  - Color: White (`theme.colors.white`)
+  - Typography: `theme.typography.p5.bold`
+  - Font: `theme.fonts.alphanumeric`
+
+**Interactive States:**
+
+- **Hover:**
+  - Transform: `scale(1.03)` or slight elevation
+  - Box shadow: Increase shadow depth
+  - Transition: `all 0.2s ease`
+  - Cursor: Pointer
+- **Focus:** Visible outline for keyboard navigation
+
+**Infinite Scrolling Implementation:**
+
+- **Library:** Use React Query's `useInfiniteQuery` hook with `react-intersection-observer`
+- **Package:** Install `react-intersection-observer` from npm
+- **Trigger:** When user scrolls to bottom of grid (use `useInView` hook)
+- **Detection:** Add invisible sentinel element at bottom of grid
+- **Loading indicator:** Show loading spinner or skeleton cards when fetching more
+- **Initial load:** 8 items
+- **Subsequent loads:** 8 items per page (or as specified by API)
+- **Stop condition:** When `pageInfo.hasNextPage === false`
+- **Implementation example:**
+
+  ```typescript
+  import { useInView } from 'react-intersection-observer';
+
+  const { data, fetchNextPage, hasNextPage, isFetchingNextPage } =
+    useMealRecordsInfinite({ limit: 8 });
+
+  // Use react-intersection-observer hook to detect when sentinel is in view
+  const { ref: sentinelRef, inView } = useInView({
+    threshold: 0,
+    rootMargin: '100px', // Load more when sentinel is 100px from viewport
+  });
+
+  // Trigger fetchNextPage when sentinel comes into view
+  useEffect(() => {
+    if (inView && hasNextPage && !isFetchingNextPage) {
+      fetchNextPage();
+    }
+  }, [inView, hasNextPage, isFetchingNextPage, fetchNextPage]);
+
+  // Render sentinel element with ref
+  // {hasNextPage && <Sentinel ref={sentinelRef} />}
+  ```
+
+**Loading States:**
+
+- Initial load: Show 8 skeleton cards in grid
+- Loading more: Show 2-4 skeleton cards at bottom of grid
+- No data: Show empty state message
+
+**Empty State:**
+
+- Display when no meal records exist
+- Message: "食事の記録がありません" or similar
+- Center aligned, with appropriate icon
+
+---
+
+## Design Requirements
+
+### Layout & Spacing
+
+**Page Structure:**
+
+```
+┌─────────────────────────────────────────┐
+│ Header (from Layout)                    │ ← Not in MyPage component
+├─────────────────────────────────────────┤
+│ Achievement  │  Health Record           │ ← Full viewport width, no gap
+│   Section    │    Section               │ ← Equal heights (30-35rem)
+├─────────────────────────────────────────┤
+│         Meal Records Section            │ ← Constrained width, centered
+│  ┌────┬────┬────┬────┐                  │
+│  │Card│Card│Card│Card│  (4 cols)        │
+│  ├────┼────┼────┼────┤                  │
+│  │Card│Card│Card│Card│                  │
+│  └────┴────┴────┴────┘                  │
+├─────────────────────────────────────────┤
+│ Footer (from Layout)                    │ ← Not in MyPage component
+└─────────────────────────────────────────┘
+```
+
+**Top Sections (Achievement & Health Record):**
+
+- Full viewport width (edge-to-edge, no container)
+- **Desktop (≥1024px):**
+  - Display: Flex or Grid with 2 equal columns
+  - Each section: 50% width
+  - No gap between sections
+  - Equal minimum height: 30rem - 35rem
+- **Mobile (<1024px):**
+  - Display: Stacked vertically (flex-direction: column)
+  - Each section: 100% width
+  - Minimum height: 30rem each
+
+**Content Sections (Meal Records):**
+
+- Container: Constrained maximum width
+  - Max-width: `960px` or use `theme.breakpoints.desktop`
+  - Margin: `0 auto` (centered)
+  - Padding: `0 2rem` (side padding for mobile)
+- Vertical spacing between sections: 4rem - 6rem
+
+**Colors:**
+
+- **Always use theme colors** from `theme.colors`:
+  - Primary (Orange): `theme.colors.primary[400]` - for active filter buttons, accents
+  - Secondary (Dark): `theme.colors.black[400]` - for text, overlays
+  - White: `theme.colors.white` - for text on dark backgrounds, backgrounds
+  - Black variants: Use appropriate black shades from theme
+  - Gradient: Use `theme.colors.gradient` if needed for backgrounds
+- Graph lines:
+  - Body weight line: `theme.colors.primary[300]`
+  - Body fat percentage line: `theme.colors.secondary[300]`
+- Achievement section:
+  - Circular indicator: White stroke on semi-transparent dark overlay
+  - Text: White for visibility on image background, have shadow `text-shadow: 0 0 6px #FC7400;`
+- Meal card overlays: Semi-transparent dark background `rgba(65, 65, 65, 0.80)` with white text
+
+**Typography:**
+
+- **Always use theme typography** from `theme.typography` and `theme.fonts`:
+  - Japanese text: `theme.fonts.japanese` (Noto Sans JP)
+  - Alphanumeric text: `theme.fonts.alphanumeric` (Inter)
+  - Section headers: Use `theme.typography.h3` or similar
+  - Achievement percentage: Use large typography (h1 or custom large size)
+  - Meal card text: Use smaller typography (p5)
+  - Graph labels: Use `theme.typography.p7.regular` (override with `font-weight: 300` if needed for lighter appearance)
+- **Font weights:**
+  - Regular: 400
+  - Bold: 700
+- **Always use rem units** for all font sizes, spacing, dimensions (base: 1rem = 10px)
+
+**Responsive Breakpoints:**
+
+- **Always use `theme.breakpoints`** for media queries:
+  - Mobile: `theme.breakpoints.mobile` (415px) - 2-column meal grid, stacked sections
+  - Tablet: `theme.breakpoints.tablet` (1024px) - transition point
+  - Desktop: `theme.breakpoints.desktop` (1440px) - 4-column meal grid, side-by-side sections
+- Ensure smooth transitions between breakpoints
+- Add intermediate breakpoints if needed to prevent UI issues
+
+**Interactive Elements:**
+
+- Hover states: All clickable elements should have visible hover effects
+  - Buttons: Background color change, slight scale, or opacity change
+  - Meal cards: Subtle scale (1.02-1.05) or opacity change
+  - Links: Color change or underline
+- Focus states: Visible keyboard focus indicators for accessibility
+- Active states: Visual feedback for currently selected items (e.g., filter buttons)
+
+**Accessibility:**
+
+- All images must have appropriate alt text
+- Interactive elements must be keyboard accessible
+- Sufficient color contrast ratios (WCAG AA minimum)
+- Focus indicators visible and clear
+- ARIA labels where appropriate
+- Touch targets at least 4.4rem (44px) for mobile
+
+**Visual Polish:**
+
+- Card shadows: Subtle box-shadow for depth on meal cards
+- Border radius: Consistent rounded corners (0.4rem - 0.8rem)
+- Transitions: Smooth animations for state changes (0.2s - 0.3s)
+- Loading states: Skeleton screens or spinners matching the design
+- Empty states: Appropriate messaging when no data available
+
+---
+
+## Error Handling & Edge Cases
+
+### Loading States
+
+**Achievement Section:**
+
+- Show skeleton: Rectangular placeholder with shimmer effect
+- Maintain section height to prevent layout shift
+- Loading indicator: Optional spinner centered on skeleton
+
+**Health Record Section:**
+
+- Show skeleton: Graph area with filter buttons visible
+- Filter buttons: Disabled during loading
+- Loading indicator: Spinner centered in graph area or shimmer effect
+
+**Meal Records Section:**
+
+- Initial load: Display 8 skeleton cards in grid layout
+- Loading more: Display 2-4 skeleton cards at bottom of grid
+- Skeleton card: Rectangular placeholder matching card dimensions
+- Maintain grid layout to prevent layout shift
+
+**Skeleton Implementation:**
+
+```typescript
+// Use styled-components for skeleton
+const Skeleton = styled.div`
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+
+  @keyframes shimmer {
+    0% {
+      background-position: 200% 0;
+    }
+    100% {
+      background-position: -200% 0;
+    }
+  }
+`;
+```
+
+### Error States
+
+**Achievement Section:**
+
+- Display error message: "データの取得に失敗しました"
+- Show retry button: "再試行" (Retry)
+- Maintain section height
+- Style: Simple centered text with error icon (`ic-error.svg`)
+
+**Health Record Section:**
+
+- Display error message in graph area
+- Keep filter buttons visible (not disabled)
+- Show retry button
+- Clicking filter button attempts to refetch data
+
+**Meal Records Section:**
+
+- Display error message: "食事記録の取得に失敗しました"
+- Show retry button below message
+- If error occurs during "load more", show error toast/banner at bottom
+- Don't clear existing data on error
+
+**Error Message Styling:**
+
+```typescript
+// Simple error component
+<ErrorContainer>
+  <ErrorIcon src={errorIcon} alt="" />
+  <ErrorMessage>データの取得に失敗しました</ErrorMessage>
+  <RetryButton onClick={handleRetry}>再試行</RetryButton>
+</ErrorContainer>
+```
+
+### Empty States
+
+**Achievement Section:**
+
+- When no data: Show placeholder with message "本日のデータがありません"
+- Background: Gray placeholder color
+- Message: Centered text
+
+**Health Record Section:**
+
+- When no data: Show empty graph with message "記録がありません"
+- Graph: Display empty grid/axes
+- Message: Centered in graph area
+
+**Meal Records Section:**
+
+- When no meals: Show centered message "食事の記録がありません"
+- Optional: Add illustration or icon
+- Style: Centered with adequate padding (4rem - 6rem vertical)
+
+### Network & Validation
+
+**API Timeout:**
+
+- Set reasonable timeout (e.g., 10 seconds)
+- Show error message: "通信がタイムアウトしました"
+- Provide retry option
+
+**Invalid Response Data:**
+
+- Use Zod schemas to validate API responses
+- Log validation errors to console
+- Show user-friendly error message
+- Don't crash the application
+
+**React Query Error Handling:**
+
+```typescript
+const { data, isLoading, isError, error, refetch } = useQuery({
+  queryKey: ['achievement'],
+  queryFn: getAchievement,
+  retry: 2,
+  staleTime: 5 * 60 * 1000, // 5 minutes
+});
+
+if (isError) {
+  return <ErrorState message={error.message} onRetry={refetch} />;
+}
+```
+
+---
+
+## Technical Implementation Notes
+
+### API Integration Best Practices
+
+1. **Use existing hooks from `src/hooks/`:**
+   - `useAchievement()` - for achievement data
+   - `useHealthRecords(duration)` - for health record data
+   - `useMealRecords(limit, cursor)` - for meal records with infinite scroll
+
+2. **Zod Schema Validation:**
+   - All API responses are validated using generated Zod schemas
+   - Schemas location: `src/api/generated/schemas/`
+   - Validation happens automatically in the hooks
+   - Handle validation errors gracefully
+
+3. **React Query Configuration:**
+   - Achievement: Use `useQuery` with 5-minute stale time
+   - Health Records: Use `useQuery` with per-duration cache keys
+   - Meal Records: Use `useInfiniteQuery` for pagination
+   - Enable caching for better performance
+
+4. **Data Priority:**
+   - In case of discrepancies between API data and design mockup, **API data takes priority**
+   - Adapt UI to display API data structure accurately
+   - If API returns unexpected format, validate with Zod and show error
+
+### Component Organization
+
+1. **Main Page Component (`src/pages/MyPage/index.tsx`):**
+
+   ```typescript
+   const MyPage = () => {
+     const { isAuthenticated } = useAuth();
+
+     if (!isAuthenticated) {
+       return <Navigate to="/authenticationError" />;
+     }
+
+     return (
+       <PageContainer>
+         <TopSectionWrapper>
+           <AchievementSection />
+           <HealthRecordSection />
+         </TopSectionWrapper>
+         <MealRecordsSection />
+       </PageContainer>
+     );
+   };
+   ```
+
+2. **Styled Components (`src/pages/MyPage/index.styles.ts`):**
+   - Define layout containers
+   - Use theme values exclusively
+   - Create responsive layouts with theme breakpoints
+
+3. **Sub-components:**
+   - Each section as separate component in `components/` folder
+   - Reusable components (MealCard, FilterButton, etc.)
+   - Each with own styles and tests
+
+### Testing Requirements
+
+1. **Unit Tests:**
+   - Test each section component independently
+   - Mock API hooks with MSW
+   - Test loading, error, and empty states
+   - Test user interactions (button clicks, infinite scroll)
+
+2. **Integration Tests:**
+   - Test entire page with mocked API responses
+   - Test authentication redirect
+   - Test section interactions
+   - Test responsive behavior
+
+3. **Coverage Target:** 80% or above
+
+### Performance Considerations
+
+1. **Image Optimization:**
+   - Use lazy loading for meal images
+   - Add loading="lazy" attribute
+   - Consider using placeholder images
+
+2. **Infinite Scroll:**
+   - Use Intersection Observer API
+   - Debounce scroll events
+   - Show loading indicators during fetch
+
+3. **Chart Rendering:**
+   - Use efficient charting library (recharts recommended)
+   - Memoize chart data transformations
+   - Animate chart transitions smoothly
+
+### Accessibility Checklist
+
+- [ ] All images have descriptive alt text
+- [ ] All interactive elements are keyboard accessible
+- [ ] Focus indicators are visible
+- [ ] Color contrast meets WCAG AA standards
+- [ ] ARIA labels for icon-only buttons
+- [ ] Semantic HTML structure
+- [ ] Screen reader announcements for loading/error states
+- [ ] Touch targets ≥ 44px (4.4rem) for mobile
+
+---
+
+## Summary Checklist
+
+**Before starting implementation, ensure you:**
+
+- [ ] Understand the component architecture (what to build vs what exists)
+- [ ] Have reviewed the existing hooks in `src/hooks/`
+- [ ] Understand the API response schemas
+- [ ] Know the theme system (`theme.colors`, `theme.fonts`, `theme.typography`, `theme.breakpoints`)
+- [ ] Understand responsive breakpoints and layout changes
+- [ ] Plan for loading, error, and empty states
+- [ ] Set up proper file structure for page and sub-components
+
+**After implementation, verify:**
+
+- [ ] All sections display correctly on desktop and mobile
+- [ ] API integration works with existing hooks
+- [ ] Infinite scroll loads more meal records
+- [ ] Filter buttons change health record graph
+- [ ] Loading states don't cause layout shift
+- [ ] Error states show appropriate messages
+- [ ] Authentication redirect works
+- [ ] All interactive elements have hover/focus states
+- [ ] Tests are written and passing (80%+ coverage)
+- [ ] No hardcoded colors, fonts, or breakpoints (all use theme)
+- [ ] All spacing uses rem units

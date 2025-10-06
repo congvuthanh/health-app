@@ -38,8 +38,8 @@ export const FooterNavItem = styled(Link)`
   border-left: 1px solid ${({ theme }) => theme.colors.black[400]};
   text-align: center;
 
-  &:first-child {
-    border-left: none;
+  &:last-of-type {
+    border-right: 1px solid ${({ theme }) => theme.colors.black[400]};
   }
 
   &:hover {
@@ -55,7 +55,12 @@ export const FooterNavItem = styled(Link)`
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
     min-width: initial;
     border-left: none;
+    border-right: none;
     padding-left: 0.8rem;
     padding-right: 0.8rem;
+
+    &:last-of-type {
+      border-right: none;
+    }
   }
 `;
