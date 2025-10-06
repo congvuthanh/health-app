@@ -178,7 +178,7 @@ Display seven menu items vertically:
   - Outline offset: `-2px` (inset)
 
 - **Accessibility**:
-  - Each item: `role="menuitem"`
+  - Each item: `role="menu-item"`
 
 ## Behavior
 

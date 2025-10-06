@@ -125,7 +125,7 @@ describe('Header Component', () => {
         await user.click(menuButton);
 
         // Check all menu items (based on data file)
-        const menuItems = screen.getAllByRole('menuitem');
+        const menuItems = screen.getAllByRole('menu-item');
         expect(menuItems).toHaveLength(dropdownMenuItems.length);
       });
 
@@ -148,7 +148,7 @@ describe('Header Component', () => {
         const menuButton = screen.getByLabelText('Open menu');
         await user.click(menuButton);
 
-        const menuItems = screen.getAllByRole('menuitem');
+        const menuItems = screen.getAllByRole('menu-item');
         const myRecordsItem = menuItems[0]; // First item is "自分の記録"
         await user.click(myRecordsItem);
 
@@ -244,15 +244,15 @@ describe('Header Component', () => {
       expect(screen.getByRole('menu')).toBeInTheDocument();
     });
 
-    it('should have role="menuitem" on all dropdown items', async () => {
+    it('should have role="menu-item" on all dropdown items', async () => {
       const { user } = renderWithProviders(<Header />);
       const menuButton = screen.getByLabelText('Open menu');
       await user.click(menuButton);
 
-      const menuItems = screen.getAllByRole('menuitem');
+      const menuItems = screen.getAllByRole('menu-item');
       expect(menuItems.length).toBeGreaterThan(0);
       menuItems.forEach((item: HTMLElement) => {
-        expect(item).toHaveAttribute('role', 'menuitem');
+        expect(item).toHaveAttribute('role', 'menu-item');
       });
     });
 

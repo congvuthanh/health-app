@@ -8,8 +8,11 @@ import logoSvg from '/logo.svg';
 // Data
 import { dropdownMenuItems, primaryNavItems } from 'data/headerMenuItems';
 
-// Styled Components
+// Hooks
+import { useAuth } from 'contexts/AuthContext';
 import { useAppNavigate } from 'hooks/useAppNavigate';
+
+// Styled Components
 import {
   Badge,
   DropdownMenu,
@@ -33,10 +36,11 @@ export const Header: React.FC = () => {
   const dropdownRef = useRef<HTMLDivElement>(null);
   const menuButtonRef = useRef<HTMLButtonElement>(null);
   const navigate = useAppNavigate();
+  const { logout } = useAuth();
 
   // Handle logout
   const handleLogout = () => {
-    // TODO: Implement actual logout logic (clear auth state, tokens, etc.)
+    logout();
     setIsMenuOpen(false);
     navigate('/');
   };
@@ -118,7 +122,7 @@ export const Header: React.FC = () => {
                 <MenuItem
                   key={item.id}
                   onClick={() => handleMenuAction(item.action)}
-                  role="menuitem"
+                  role="menu-item"
                   type="button"
                 >
                   <MenuItemIcon src={item.icon} />
@@ -132,7 +136,7 @@ export const Header: React.FC = () => {
                 key={item.id}
                 to={item.link!}
                 onClick={handleMenuItemClick}
-                role="menuitem"
+                role="menu-item"
               >
                 <MenuItemIcon src={item.icon} />
                 {item.label}
