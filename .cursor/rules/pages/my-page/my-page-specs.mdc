@@ -145,6 +145,24 @@ src/pages/MyPage/
 - **Recommended library:** `recharts` or `chart.js` for React
 - **Alternative:** Implement custom SVG-based line chart
 - **Data ordering:** Display with most recent date at the far right (chronological left-to-right)
+- **CartesianGrid Configuration:**
+  ```typescript
+  <CartesianGrid
+    stroke={theme.colors.white}
+    strokeWidth={1}
+    vertical={true}
+    horizontal={false}
+    syncWithTicks={true}  // Ensures gridlines align with all X-axis ticks
+  />
+  ```
+- **XAxis Configuration:**
+  ```typescript
+  <XAxis
+    dataKey="date"
+    interval={0}  // CRITICAL: Forces tick at every data point, preventing missing gridlines
+    // ... other props
+  />
+  ```
 
 **Graph Visual Design:**
 
@@ -156,6 +174,10 @@ src/pages/MyPage/
   - Line color: White (`theme.colors.white`)
   - Line width: 0.1rem (1px)
   - No horizontal grid lines
+  - **CRITICAL FIX:** To prevent missing vertical gridlines:
+    1. Use `syncWithTicks={true}` on `CartesianGrid` - syncs gridlines with X-axis ticks
+    2. Use `interval={0}` on `XAxis` - forces a tick at EVERY data point (prevents auto-hiding ticks)
+    3. Without `interval={0}`, Recharts may skip ticks when space is limited, causing missing gridlines
 - **X-axis:**
   - Labels: Show time periods below the graph
   - Format depends on duration filter:

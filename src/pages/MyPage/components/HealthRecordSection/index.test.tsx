@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { fireEvent, render, screen } from '@testing-library/react';
 import * as useHealthRecordsHook from 'hooks/useHealthRecords';
 import { ThemeProvider } from 'styled-components';

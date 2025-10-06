@@ -107,12 +107,13 @@ const HealthRecordSection = () => {
             <LineChart
               data={chartData}
               margin={{ top: 10, right: 10, left: 10, bottom: 10 }}
-              barGap={5}
             >
               <CartesianGrid
-                strokeDasharray="5 0"
-                vertical={true}
+                stroke={theme.colors.white}
+                strokeWidth={1}
+                vertical
                 horizontal={false}
+                syncWithTicks
               />
               <XAxis
                 dataKey="date"
@@ -125,6 +126,7 @@ const HealthRecordSection = () => {
                 }}
                 axisLine={false}
                 tickLine={false}
+                interval={0}
               />
               <Tooltip
                 contentStyle={{
