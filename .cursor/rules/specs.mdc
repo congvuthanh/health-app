@@ -17,6 +17,41 @@ _The web application "Health-App"_
 - Use [React Router v7 - latest](https://reactrouter.com/start/data/installation) for routing.
 - Use [React Query](https://tanstack.com/query/latest/docs/framework/react/installation) for data fetching
 - Use TypeScript as the application development language.
+- **Follow the project structure defined in README.md:**
+
+  ```
+  src/
+  ├── api/                  # API layer (client.ts, endpoints.ts, types.ts)
+  ├── assets/               # Static assets (SVG icons, images)
+  │   ├── icons/
+  │   └── images/
+  ├── components/           # Reusable components
+  │   ├── common/           # Generic shared components
+  │   ├── layout/           # Layout components (Header/, Footer/, Layout/)
+  │   │   └── [Component]/
+  │   │       ├── index.tsx
+  │   │       ├── index.styles.ts (optional)
+  │   │       └── index.test.tsx
+  │   └── features/         # Feature-specific components
+  ├── hooks/                # Custom hooks (useAuth, useAchievement, etc.)
+  ├── pages/                # Page components
+  │   └── [PageName]/
+  │       ├── index.tsx
+  │       ├── index.styles.ts (optional)
+  │       └── index.test.tsx
+  ├── routes/               # Routing configuration
+  ├── services/             # Business logic layer
+  ├── store/                # State management
+  ├── styles/               # Global styles, theme, and type definitions
+  ├── types/                # TypeScript type definitions
+  └── utils/                # Utility functions
+  ```
+
+  - **IMPORTANT**: Always place files in their correct directory according to this structure
+  - Each component should have its own folder with `index.tsx`, optional `index.styles.ts`(if have style, it should be required), and `index.test.tsx`
+  - Keep components organized by their purpose (common, layout, features)
+  - Hooks should be named with `use` prefix (e.g., `useAuth.ts`)
+
 - Use [styled-components](https://styled-components.com/) for styling
   - **IMPORTANT: ALL styling MUST use the theme system defined in `src/styles/theme.ts`**
   - **Always reference `theme.colors`, `theme.fonts`, `theme.typography`, and `theme.breakpoints`** in your styled-components
