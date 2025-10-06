@@ -60,7 +60,9 @@ Display three navigation items horizontally with icons and labels:
 3. **お知らせ (Notifications)**
    - Icon: `src/assets/icons/ic-info.svg`
    - Link: `#` (placeholder)
-   - Badge: Display notification count (e.g., `1`)
+   - Badge: Display unread notification count
+     - Only show badge when unread count > 0
+     - Hide badge completely when count is 0
      - Position: Top-right corner of icon (absolute positioning)
      - Background: `theme.colors.primary[500]`
      - Color: `theme.colors.white`
@@ -182,23 +184,27 @@ Display seven menu items vertically:
 
 ## Behavior
 
-### Menu Toggle
+### Menu Toggle and Keyboard Interaction
 
-- Clicking the hamburger button toggles the dropdown menu visibility
+- Clicking the hamburger button (「≡」) toggles the dropdown menu visibility
 - Menu state managed by `isMenuOpen` boolean state
-- Icon changes between menu and close based on state
-
-### Click Outside to Close
-
-- Clicking anywhere outside the dropdown menu or hamburger button closes the menu
-- Uses `useEffect` with event listener for click outside detection
-- References: `dropdownRef` for dropdown, `menuButtonRef` for button
+- Icon changes between menu (「≡」) and close (「x」) based on state
+- The menu must close when:
+  - The "esc" key is pressed
+  - The close icon (「x」) is clicked
+  - User clicks outside the menu
+- Uses `useEffect` with event listeners for:
+  - Click outside detection (using `dropdownRef` and `menuButtonRef`)
+  - "esc" key press detection
 
 ### Menu Item Click
 
 - Clicking any dropdown item closes the menu
-- If item has a `link`, navigate using React Router `Link`
-- If item has an `action` (logout), execute the function and navigate to `/`
+- All menu items except logout should be implemented as links with `href="#"` (placeholder)
+- For logout item:
+  - Execute logout process when clicked
+  - After successful logout, redirect user to the top page (`/`)
+  - No `href` attribute needed as it's an action item
 
 ### Responsive Behavior
 
@@ -271,7 +277,12 @@ interface DropdownItem {
 
 ## Notes
 
-- The notification badge count should eventually be fetched from API or state management
-- Placeholder links (`#`) should be replaced with actual routes when those pages are implemented
-- Logout functionality should be implemented to clear authentication state
-- Ensure keyboard navigation and accessibility compliance
+- The unread notification count should be fetched from API or state management
+- The badge should only be displayed when there are unread notifications (count > 0)
+- All menu items (except logout) must have `href="#"` as placeholder until actual routes are implemented
+- Logout functionality must:
+  - Clear authentication state
+  - Redirect to top page
+  - Handle any cleanup needed
+- Ensure keyboard navigation (especially "esc" key) and accessibility compliance
+- Menu close behavior must handle all specified cases (esc key, click outside, close icon)

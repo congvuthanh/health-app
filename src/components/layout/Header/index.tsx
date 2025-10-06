@@ -61,7 +61,7 @@ export const Header: React.FC = () => {
     setIsMenuOpen((prev) => !prev);
   };
 
-  // Close menu when clicking outside
+  // Close menu when clicking outside or pressing ESC key
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (
@@ -74,12 +74,20 @@ export const Header: React.FC = () => {
       }
     };
 
+    const handleEscapeKey = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsMenuOpen(false);
+      }
+    };
+
     if (isMenuOpen) {
       document.addEventListener('mousedown', handleClickOutside);
+      document.addEventListener('keydown', handleEscapeKey);
     }
 
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEscapeKey);
     };
   }, [isMenuOpen]);
 

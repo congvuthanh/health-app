@@ -65,7 +65,7 @@ export const dropdownMenuItems: DropdownItem[] = [
     id: 'my-records-dropdown',
     label: '自分の記録',
     icon: icMemo,
-    link: '#',
+    link: '/myPage',
   },
   {
     id: 'challenge-dropdown',

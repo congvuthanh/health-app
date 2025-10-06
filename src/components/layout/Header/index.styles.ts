@@ -3,8 +3,10 @@ import { Link } from 'react-router';
 import styled, { css } from 'styled-components';
 
 export const HeaderContainer = styled.header`
-  position: sticky;
+  position: fixed;
   top: 0;
+  left: 0;
+  right: 0;
   height: 6.4rem;
   background: ${({ theme }) => theme.colors.black[500]};
   padding: 0 2.4rem;
@@ -52,6 +54,24 @@ export const PrimaryNav = styled.nav`
   }
 `;
 
+export const Badge = styled.span`
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  min-width: 1.6rem;
+  height: 1.6rem;
+  background: ${({ theme }) => theme.colors.primary[500]};
+  color: ${({ theme }) => theme.colors.white};
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  font-weight: 400;
+  line-height: 1.2rem;
+  padding: 0.2rem;
+`;
+
 export const NavItem = styled(Link)`
   display: flex;
   align-items: center;
@@ -75,7 +95,7 @@ export const NavItem = styled(Link)`
   }
 
   @media (max-width: ${({ theme }) => theme.breakpoints.tablet}) {
-    span {
+    span:not(${Badge}) {
       display: none;
     }
     gap: 0;
@@ -87,28 +107,11 @@ export const NavIconWrapper = styled.div`
 `;
 
 export const NavIcon = styled(SVG)`
+  display: block;
   fill: currentColor;
   width: 3.2rem;
   height: 3.2rem;
   transition: filter 0.2s ease;
-`;
-
-export const Badge = styled.span`
-  position: absolute;
-  top: -5px;
-  right: -5px;
-  min-width: 1.6rem;
-  height: 1.6rem;
-  background: ${({ theme }) => theme.colors.primary[500]};
-  color: ${({ theme }) => theme.colors.white};
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 1rem;
-  font-weight: 400;
-  line-height: 1.2rem;
-  padding: 0.2rem;
 `;
 
 export const MenuButton = styled.button`
@@ -120,8 +123,6 @@ export const MenuButton = styled.button`
   align-items: center;
   justify-content: center;
   transition: opacity 0.2s ease;
-  width: 3.2rem;
-  height: 3.2rem;
 
   &:hover {
     opacity: 0.8;
@@ -142,7 +143,7 @@ export const MenuIcon = styled(SVG)`
 export const DropdownMenu = styled.div<{ $isOpen: boolean }>`
   position: absolute;
   top: 7rem;
-  right: 0;
+  right: 1.6rem;
   min-width: 28rem;
   background: ${({ theme }) => theme.colors.black[400]};
   box-shadow: 0 0.4rem 1.2rem rgba(0, 0, 0, 0.15);
