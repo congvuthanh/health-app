@@ -1,0 +1,14 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`ScrollToTop > Snapshot > matches snapshot 1`] = `
+<button
+  aria-label="ページのトップへ戻る"
+  class="sc-bRKDuR isOYpy"
+  type="button"
+>
+  <img
+    alt=""
+    class="sc-hvigdm kTZjvI"
+  />
+</button>
+`;

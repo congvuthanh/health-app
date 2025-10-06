@@ -1,3 +1,4 @@
+import { ScrollToTop } from 'components/common/ScrollToTop';
 import { useAuth } from 'contexts/AuthContext';
 import React from 'react';
 import { Outlet } from 'react-router';
@@ -14,6 +15,7 @@ export const Layout: React.FC = () => {
       <MainContent role="main">
         <Outlet />
       </MainContent>
+      <ScrollToTop />
       <Footer />
     </LayoutContainer>
   );

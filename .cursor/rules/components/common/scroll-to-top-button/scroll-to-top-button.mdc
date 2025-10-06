@@ -1,0 +1,374 @@
+---
+globs: src/components/common/ScrollToTop/**
+alwaysApply: false
+---
+
+_Scroll to Top Button Component_
+
+**Component Purpose**
+
+A reusable fixed-position button that allows users to quickly scroll back to the top of the page. This component enhances user experience on long pages by providing quick navigation back to the top.
+
+**Functional Requirements**
+
+- **Location:** `src/components/common/ScrollToTop/index.tsx`
+- **Component Structure:**
+  - Main component file: `index.tsx`
+  - Styled components file: `index.styles.ts`
+  - Test file: `index.test.tsx`
+- **Behavior:**
+  - When clicked, smoothly scrolls the page to the top (y position = 0)
+  - Scroll behavior should be smooth (not instant jump)
+  - Button remains fixed in position while scrolling
+- **Visibility Logic:**
+  - Always visible on pages with scrollable content
+  - Optional enhancement: Show only when user has scrolled down a certain threshold (e.g., 300px)
+  - Optional enhancement: Fade in/out transition when showing/hiding
+
+**Design Requirements**
+
+**Position & Layout:**
+
+- **Position:** Fixed at the bottom-right corner of the viewport
+- **Coordinates:**
+  - Bottom: 2rem from viewport bottom edge
+  - Right: 2rem from viewport right edge
+- **Z-index:** High enough to stay above page content (e.g., `z-index: 1000`)
+- **Responsive Spacing:**
+  - **Desktop:** 2rem from bottom and right
+  - **Mobile:** 1.6rem from bottom and right (to account for smaller screens)
+
+**Visual Design:**
+
+- **Shape:** Circular button
+- **Size:**
+  - **Desktop:** 6.4rem diameter (64px)
+  - **Mobile:** 4.8rem diameter (48px)
+  - **Always use rem units:** Convert using base 10 (e.g., 64px = 6.4rem)
+- **Icon:**
+  - **Normal state:** `/src/assets/icons/ic-component-scroll.svg`
+  - **Hover state:** `/src/assets/icons/ic-component-scroll-hover.svg`
+  - Icon should be centered within the button
+  - Icon size: approximately 60-70% of button diameter
+- **Background:**
+  - Use white or light background to contrast with page content
+  - Alternative: Use `theme.colors.primary` for more prominent appearance
+- **Border:**
+  - Optional: 1px solid border using `theme.colors.black[100]` for subtle definition
+  - Alternative: No border if using box-shadow
+- **Shadow:**
+  - Add subtle box-shadow for depth and visibility
+  - Example: `box-shadow: 0 0.2rem 0.8rem rgba(0, 0, 0, 0.15);`
+  - Increase shadow on hover for lift effect
+
+**States & Interactions:**
+
+- **Default State:**
+  - Display normal scroll icon
+  - Default background color
+  - Default shadow
+- **Hover State:**
+  - Change icon to hover variant
+  - Increase box-shadow for "lift" effect
+  - Optional: Slight scale transform (e.g., `scale(1.05)`)
+  - Cursor changes to pointer
+- **Active/Pressed State:**
+  - Slight scale down (e.g., `scale(0.95)`)
+  - Reduced shadow for "pressed" effect
+- **Focus State (Keyboard):**
+  - Visible focus ring using `outline` or `box-shadow`
+  - Color: `theme.colors.primary.500` or similar visible color
+  - Width: 2px outline with 2px offset
+- **Disabled State (if applicable):**
+  - Reduced opacity (0.5)
+  - No pointer cursor
+  - No hover effects
+
+**Transitions & Animations:**
+
+- **Smooth Transitions:**
+  - All state changes should animate smoothly
+  - Duration: 0.2s - 0.3s
+  - Easing: `ease-in-out` or `cubic-bezier(0.4, 0, 0.2, 1)`
+- **Properties to Animate:**
+  - `transform` (for scale effects)
+  - `box-shadow` (for depth changes)
+  - `opacity` (for show/hide transitions)
+- **Scroll Behavior:**
+  - Use `window.scrollTo({ top: 0, behavior: 'smooth' })` for smooth scrolling
+  - Alternative: Use CSS `scroll-behavior: smooth` on html element
+
+**Colors:**
+
+- **Always use theme colors** from `theme.colors`:
+  - Background: `theme.colors.white` or `theme.colors.primary.300`
+  - Icon: Should be visible on chosen background
+  - Shadow: `rgba(0, 0, 0, 0.15)` or similar semi-transparent black
+  - Focus ring: `theme.colors.primary.500`
+
+**Typography:**
+
+- No text content required (icon-only button)
+- If adding tooltip/aria-label: Use `theme.fonts.japanese` for Japanese text
+
+**Responsive Breakpoints:**
+
+- **Always use `theme.breakpoints`** for media queries:
+  - **Mobile (`theme.breakpoints.mobile` - 415px):**
+    - Button size: 4.8rem diameter
+    - Position: 1.6rem from edges
+    - Ensure touch target is at least 4.4rem (44px) minimum
+  - **Tablet/Desktop:**
+    - Button size: 6.4rem diameter
+    - Position: 2rem from edges
+- Ensure button doesn't overlap with other fixed elements (e.g., footer, navigation)
+
+**Accessibility Requirements**
+
+- **ARIA Attributes:**
+  - `aria-label="ページのトップへ戻る"` or `aria-label="Scroll to top"`
+  - `role="button"` (automatically provided by `<button>` element)
+- **Keyboard Accessibility:**
+  - Must be focusable with Tab key
+  - Activates with Enter or Space key
+  - Visible focus indicator required
+- **Screen Reader:**
+  - Descriptive label that explains action
+  - Announce button purpose when focused
+- **Touch Target:**
+  - Minimum 4.4rem (44px) touch target on mobile
+  - Adequate spacing from screen edges for thumb reach
+
+**Implementation Requirements**
+
+**Component Structure:**
+
+```typescript
+// index.tsx - Example structure
+import React from 'react';
+import * as S from './index.styles';
+
+export const ScrollToTop: React.FC = () => {
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: 'smooth',
+    });
+  };
+
+  return (
+    <S.ScrollButton
+      onClick={scrollToTop}
+      aria-label="ページのトップへ戻る"
+      type="button"
+    >
+      <S.ScrollIcon />
+    </S.ScrollButton>
+  );
+};
+```
+
+**Styled Components (index.styles.ts):**
+
+- Use `styled-components` with theme integration
+- All measurements in `rem` units
+- Use theme colors, breakpoints, and typography
+- Implement proper state management (hover, focus, active)
+- Example pattern:
+
+```typescript
+import styled from 'styled-components';
+import NormalIcon from '@/assets/icons/ic-component-scroll.svg?react';
+import HoverIcon from '@/assets/icons/ic-component-scroll-hover.svg?react';
+
+export const ScrollButton = styled.button`
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  width: 6.4rem;
+  height: 6.4rem;
+  border-radius: 50%;
+  background-color: ${({ theme }) => theme.colors.white};
+  border: 1px solid ${({ theme }) => theme.colors.black[100]};
+  box-shadow: 0 0.2rem 0.8rem rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  z-index: 1000;
+  transition: all 0.3s ease-in-out;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0.4rem 1.2rem rgba(0, 0, 0, 0.2);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &:focus-visible {
+    outline: 2px solid ${({ theme }) => theme.colors.primary.500};
+    outline-offset: 2px;
+  }
+
+  @media (max-width: ${({ theme }) => theme.breakpoints.mobile}) {
+    width: 4.8rem;
+    height: 4.8rem;
+    bottom: 1.6rem;
+    right: 1.6rem;
+  }
+`;
+
+export const ScrollIcon = styled(NormalIcon)`
+  width: 60%;
+  height: 60%;
+
+  ${ScrollButton}:hover & {
+    content: url(${HoverIcon});
+  }
+`;
+```
+
+**Testing Requirements**
+
+**Unit Tests (index.test.tsx):**
+
+- **Rendering:**
+  - Component renders without crashing
+  - Button element is present in the DOM
+  - Icon is rendered correctly
+  - Proper ARIA attributes are present
+- **Functionality:**
+  - Clicking button triggers scroll to top
+  - Mock `window.scrollTo` and verify it's called with correct parameters
+  - Verify smooth scroll behavior option is used
+- **Accessibility:**
+  - Button has proper aria-label
+  - Button is keyboard accessible (can be focused)
+  - Button can be activated with Enter/Space key
+- **Styling:**
+  - Button has correct position (fixed)
+  - Button has correct size (use snapshots or style queries)
+  - Hover state applies correctly (if testable)
+- **Responsive:**
+  - Button size changes based on viewport width (if using matchMedia)
+  - Position adjusts for mobile breakpoint
+
+**Test Coverage Goal:**
+
+- Aim for 80%+ coverage
+- Cover all user interactions
+- Test accessibility features
+- Verify styled-components render correctly
+
+**Example Test Structure:**
+
+```typescript
+import { render, screen, fireEvent } from '@testing-library/react';
+import { ThemeProvider } from 'styled-components';
+import { theme } from '@/styles/theme';
+import { ScrollToTop } from './index';
+
+describe('ScrollToTop', () => {
+  const renderComponent = () => {
+    return render(
+      <ThemeProvider theme={theme}>
+        <ScrollToTop />
+      </ThemeProvider>
+    );
+  };
+
+  beforeEach(() => {
+    window.scrollTo = vi.fn();
+  });
+
+  it('renders scroll to top button', () => {
+    renderComponent();
+    const button = screen.getByRole('button', { name: /トップへ戻る/i });
+    expect(button).toBeInTheDocument();
+  });
+
+  it('scrolls to top when clicked', () => {
+    renderComponent();
+    const button = screen.getByRole('button');
+    fireEvent.click(button);
+
+    expect(window.scrollTo).toHaveBeenCalledWith({
+      top: 0,
+      behavior: 'smooth',
+    });
+  });
+
+  it('has proper accessibility attributes', () => {
+    renderComponent();
+    const button = screen.getByRole('button');
+    expect(button).toHaveAttribute('aria-label');
+  });
+
+  it('is keyboard accessible', () => {
+    renderComponent();
+    const button = screen.getByRole('button');
+    button.focus();
+    expect(button).toHaveFocus();
+  });
+});
+```
+
+**Usage in Pages**
+
+- Import and include in pages that have scrollable content
+- Typically added to Layout component or individual page components
+- Example usage:
+
+```typescript
+import { ScrollToTop } from '@/components/common/ScrollToTop';
+
+export const MyPage = () => {
+  return (
+    <Layout>
+      {/* Page content */}
+      <ScrollToTop />
+    </Layout>
+  );
+};
+```
+
+**Optional Enhancements**
+
+- **Conditional Visibility:**
+  - Show button only when scrolled past threshold (e.g., 300px)
+  - Use `useState` and `useEffect` with scroll event listener
+  - Add fade in/out animation
+- **Scroll Progress Indicator:**
+  - Add circular progress ring showing scroll position
+  - Update progress based on scroll percentage
+- **Smooth Enter/Exit:**
+  - Animate button entry when threshold reached
+  - Animate button exit when at top of page
+- **Customizable Threshold:**
+  - Accept prop to customize show/hide threshold
+  - Accept prop to customize scroll behavior
+- **Tooltip:**
+  - Add tooltip on hover with text label
+  - Use native `title` attribute or custom tooltip component
+
+**Best Practices**
+
+- Always use theme values (colors, breakpoints, typography)
+- Always use rem units for sizing
+- Ensure accessibility (ARIA, keyboard, focus states)
+- Write comprehensive tests with good coverage
+- Follow project structure and naming conventions
+- Use semantic HTML (`<button>` element)
+- Optimize performance (debounce scroll listeners if using conditional visibility)
+- Consider reduced motion preferences (`prefers-reduced-motion`)
+
+**References**
+
+- Project structure: README.md
+- Theme system: `src/styles/theme.ts`
+- Icon assets: `src/assets/icons/`
+- Testing utilities: `src/utils/test/`
+- Similar components: `src/components/common/`
