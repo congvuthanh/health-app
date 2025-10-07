@@ -4,19 +4,9 @@ import * as useAuthHook from 'contexts/AuthContext';
 import * as useAchievementHook from 'hooks/useAchievement';
 import * as useHealthRecordsHook from 'hooks/useHealthRecords';
 import * as useMealRecordsHook from 'hooks/useMealRecords';
-import { BrowserRouter } from 'react-router';
-import { ThemeProvider } from 'styled-components';
-import { theme } from 'styles/theme';
+import { createTestWrapper } from 'utils/test';
 import { describe, expect, it, vi } from 'vitest';
 import MyPage from './index';
-
-const renderWithProviders = (component: React.ReactElement) => {
-  return render(
-    <BrowserRouter>
-      <ThemeProvider theme={theme}>{component}</ThemeProvider>
-    </BrowserRouter>
-  );
-};
 
 const mockHooks = () => {
   vi.spyOn(useAchievementHook, 'useAchievement').mockReturnValue({
@@ -85,7 +75,7 @@ describe('MyPage', () => {
       isLoggingOut: false,
     });
 
-    renderWithProviders(<MyPage />);
+    render(<MyPage />, { wrapper: createTestWrapper() });
 
     // Navigate component should have been rendered, which redirects
     expect(window.location.pathname).not.toBe('/myPage');
@@ -103,7 +93,7 @@ describe('MyPage', () => {
 
     mockHooks();
 
-    renderWithProviders(<MyPage />);
+    render(<MyPage />, { wrapper: createTestWrapper() });
 
     // Check that main sections are rendered
     expect(screen.getByText('75%')).toBeInTheDocument(); // Achievement
@@ -123,7 +113,7 @@ describe('MyPage', () => {
 
     mockHooks();
 
-    const { container } = renderWithProviders(<MyPage />);
+    const { container } = render(<MyPage />, { wrapper: createTestWrapper() });
 
     // Check that the main sections exist
     const sections = container.querySelectorAll('section');
