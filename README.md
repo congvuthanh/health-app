@@ -255,6 +255,13 @@ health-app/
    pnpm generate:api      # Generate API types and hooks from OpenAPI schema
    ```
 
+4. **Demo Login Credentials**
+
+   When the application starts, navigate to `http://localhost:5173` (or the port shown in terminal) and use the following credentials to log in:
+   - **Password:** `password`
+
+   > **Note:** This is the only valid password for the demo API. Any other password will result in a 401 authentication error.
+
 ## 🗺️ Application Routes
 
 | Route                    | Path                   | Description                    | Auth Required |
