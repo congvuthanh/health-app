@@ -7,6 +7,7 @@ interface AuthContextType {
   login: (authData: PostSignUp200Data) => void;
   logout: () => void;
   isLoading: boolean;
+  isLoggingOut: boolean;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(

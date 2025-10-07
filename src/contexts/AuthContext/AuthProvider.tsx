@@ -7,6 +7,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
 }) => {
   const [accessToken, setAccessToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   // Initialize auth state from localStorage on mount
   useEffect(() => {
@@ -24,8 +25,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
   };
 
   const logout = () => {
+    setIsLoggingOut(true);
     localStorage.removeItem('accessToken');
     setAccessToken(null);
+    // Reset isLoggingOut after a brief delay to allow navigation to complete
+    setTimeout(() => {
+      setIsLoggingOut(false);
+    }, 100);
   };
 
   const value = {
@@ -34,6 +40,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     login,
     logout,
     isLoading,
+    isLoggingOut,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

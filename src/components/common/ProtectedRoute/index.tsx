@@ -8,7 +8,7 @@ interface ProtectedRouteProps {
 }
 
 function ProtectedRoute({ children }: ProtectedRouteProps) {
-  const { isAuthenticated, isLoading } = useAuth();
+  const { isAuthenticated, isLoading, isLoggingOut } = useAuth();
 
   if (isLoading) {
     return (
@@ -19,7 +19,8 @@ function ProtectedRoute({ children }: ProtectedRouteProps) {
     );
   }
 
-  if (!isAuthenticated) {
+  // Don't redirect if user is logging out (navigation is in progress)
+  if (!isAuthenticated && !isLoggingOut) {
     return <Navigate to={routePath.AuthFailedPage} replace />;
   }
 
