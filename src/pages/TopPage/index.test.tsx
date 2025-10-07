@@ -41,13 +41,13 @@ describe('TopPage', () => {
       ).toBeInTheDocument();
     });
 
-    it('should render the footer', () => {
+    it('should render without footer (TopPage is standalone)', () => {
       render(<TopPage />, { wrapper: createTestWrapper() });
 
-      // Footer should be present (checking for footer nav)
+      // TopPage doesn't use Layout component, so no footer should be present
       expect(
-        screen.getByRole('navigation', { name: /footer/i })
-      ).toBeInTheDocument();
+        screen.queryByRole('navigation', { name: /Footer navigation/i })
+      ).not.toBeInTheDocument();
     });
 
     it('should have proper accessibility attributes on password input', () => {

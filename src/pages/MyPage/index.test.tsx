@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { render, screen } from '@testing-library/react';
 import * as useAuthHook from 'contexts/AuthContext';
 import * as useAchievementHook from 'hooks/useAchievement';
@@ -81,6 +82,7 @@ describe('MyPage', () => {
       login: vi.fn(),
       logout: vi.fn(),
       isLoading: false,
+      isLoggingOut: false,
     });
 
     renderWithProviders(<MyPage />);
@@ -96,6 +98,7 @@ describe('MyPage', () => {
       login: vi.fn(),
       logout: vi.fn(),
       isLoading: false,
+      isLoggingOut: false,
     });
 
     mockHooks();
@@ -115,6 +118,7 @@ describe('MyPage', () => {
       login: vi.fn(),
       logout: vi.fn(),
       isLoading: false,
+      isLoggingOut: false,
     });
 
     mockHooks();

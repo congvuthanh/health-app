@@ -1,0 +1,31 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`AuthFailedPage > matches snapshot 1`] = `
+<div>
+  <div
+    class="sc-bRKDuR jtrmVE"
+  >
+    <div
+      class="sc-hvigdm iMgZNU"
+    >
+      <h1
+        class="sc-fhHczv jA-dCcq"
+      >
+        ログインが必要です
+      </h1>
+      <p
+        class="sc-ggWZvA bhbFQv"
+      >
+        ログインページは
+        <a
+          class="sc-dTvVRJ iudMkS"
+          data-discover="true"
+          href="/"
+        >
+          こちら
+        </a>
+      </p>
+    </div>
+  </div>
+</div>
+`;
